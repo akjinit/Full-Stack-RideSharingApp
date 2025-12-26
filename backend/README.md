@@ -283,3 +283,80 @@ curl -X GET http://localhost:3000/user/profile \
 - Only the authenticated user can access their own profile
 - The password field is not included in the response for security purposes
 - This endpoint is useful for retrieving current user information after login
+
+---
+
+### GET /users/logout
+
+#### Description
+Logs out the authenticated user by invalidating their authentication token. The endpoint clears the token cookie and adds the token to a blacklist, preventing it from being used for future authenticated requests. This is a protected endpoint that requires a valid authentication token.
+
+#### Request Method
+`GET`
+
+#### Request URL
+```
+http://localhost:[PORT]/users/logout
+```
+
+#### Request Headers
+```
+Authorization: Bearer <token>
+```
+or
+```
+Cookie: token=<token>
+```
+
+#### Authentication
+**Required**: Yes
+- This endpoint requires a valid JWT authentication token obtained from either the `/users/register` or `/user/login` endpoints
+- Token can be passed via:
+  - Authorization header with Bearer scheme
+  - Cookie named "token"
+
+#### Request Body
+No request body required.
+
+#### Response Status Codes
+
+| Status Code | Description |
+|------------|-------------|
+| **200** | Logout successful. Token has been blacklisted |
+| **401** | Unauthorized. Missing or invalid authentication token |
+| **500** | Server error during logout |
+
+#### Success Response (200 OK)
+```json
+{
+  "message": "Logged out"
+}
+```
+
+#### Error Response (401 Unauthorized)
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+#### Example cURL Request
+```bash
+curl -X GET http://localhost:3000/users/logout \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+or with cookie:
+
+```bash
+curl -X GET http://localhost:3000/users/logout \
+  -H "Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+#### Notes
+- This endpoint requires authentication middleware (`authMiddleware.authUser`)
+- The token is cleared from cookies and added to a blacklist
+- After logout, the token cannot be used for future requests even if stored locally
+- The blacklist prevents token reuse attacks
+- Users should delete the stored token on the client side for security
+- This endpoint invalidates the current session immediately
