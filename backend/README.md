@@ -360,3 +360,165 @@ curl -X GET http://localhost:3000/users/logout \
 - The blacklist prevents token reuse attacks
 - Users should delete the stored token on the client side for security
 - This endpoint invalidates the current session immediately
+
+---
+
+### POST /captains/register
+
+#### Description
+Registers a new captain in the system. The endpoint validates the provided captain information, hashes the password using bcrypt, creates a captain record in the database, and returns an authentication token along with the captain details.
+
+#### Request Method
+`POST`
+
+#### Request URL
+```
+http://localhost:[PORT]/captains/register
+```
+
+#### Request Headers
+```
+Content-Type: application/json
+```
+
+#### Request Body
+The request body should be sent as JSON with the following structure:
+
+```json
+{
+  "fullName": {
+    "firstName": "string (required, minimum 3 characters)",
+    "lastName": "string (optional, minimum 3 characters if provided)"
+  },
+  "email": "string (required, must be valid email format)",
+  "password": "string (required, minimum 6 characters)",
+  "vehicle": {
+    "color": "string (required, minimum 3 characters)",
+    "plate": "string (required, minimum 3 characters)",
+    "capacity": "number (required, between 2-20)",
+    "vehicleType": "string (required, one of: car, motorcycle, auto)"
+  }
+}
+```
+
+#### Example Request
+```json
+{
+  "fullName": {
+    "firstName": "John",
+    "lastName": "Doe"
+  },
+  "email": "john.captain@example.com",
+  "password": "securePassword123",
+  "vehicle": {
+    "color": "Black",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+#### Validation Rules
+- **email**: Must be a valid email address format and unique in the system
+- **fullName.firstName**: Minimum 3 characters required
+- **fullName.lastName**: Minimum 3 characters if provided
+- **password**: Minimum 6 characters required
+- **vehicle.color**: Minimum 3 characters required
+- **vehicle.plate**: Minimum 3 characters required
+- **vehicle.capacity**: Integer between 2-20 required
+- **vehicle.vehicleType**: Must be one of: `car`, `motorcycle`, `auto`
+
+#### Response Status Codes
+
+| Status Code | Description |
+|------------|-------------|
+| **201** | Captain successfully created. Returns authentication token and captain object |
+| **400** | Validation error. Missing or invalid fields in request body |
+| **401** | Email already registered |
+| **500** | Server error during captain creation |
+
+#### Success Response (201 Created)
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "captain": {
+    "_id": "507f1f77bcf86cd799439011",
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
+    },
+    "email": "john.captain@example.com",
+    "vehicle": {
+      "color": "Black",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "status": "inactive",
+    "socketId": null,
+    "location": {
+      "lat": null,
+      "lng": null
+    }
+  }
+}
+```
+
+#### Error Response (400 Bad Request)
+```json
+{
+  "errors": [
+    {
+      "type": "field",
+      "value": "invalid-email",
+      "msg": "Invalid Email",
+      "path": "email",
+      "location": "body"
+    },
+    {
+      "type": "field",
+      "value": "1",
+      "msg": "Capacity between 2 - 20",
+      "path": "vehicle.capacity",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### Error Response (401 Unauthorized)
+```json
+{
+  "message": "Email already registered"
+}
+```
+
+#### Example cURL Request
+```bash
+curl -X POST http://localhost:3000/captains/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
+    },
+    "email": "john.captain@example.com",
+    "password": "securePassword123",
+    "vehicle": {
+      "color": "Black",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }'
+```
+
+#### Notes
+- Passwords are hashed using bcrypt before being stored in the database (salt rounds: 10)
+- The authentication token is generated using JWT (JSON Web Token)
+- The returned token can be used for subsequent authenticated requests
+- Email addresses must be unique in the database
+- Default captain status is "inactive" upon registration
+- Socket ID is null until captain goes online
+- JWT token expires in 24 hours
