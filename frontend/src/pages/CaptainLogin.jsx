@@ -20,7 +20,7 @@ const CaptainLogin = () => {
       <div>
         <img className="w-23 mb-3" src="/uber_driver.svg" alt="" />
         <form action="" onSubmit={submitHandler}>
-          <h3 className="text-lg text-medium mb-2">What's your email</h3>
+          <h3 className="text-lg text-medium mb-2">What's our Captain's email</h3>
 
           <input
             required

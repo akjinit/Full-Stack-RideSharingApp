@@ -33,7 +33,7 @@ const CaptainSignup = () => {
           alt=""
         />
         <form action="" onSubmit={submitHandler}>
-          <h3 className="text-lg text-medium mb-2">What's your name</h3>
+          <h3 className="text-lg text-medium mb-2">What's our Captain's name</h3>
           <div className="flex name gap-4 mb-5">
             <input
               required
@@ -57,7 +57,7 @@ const CaptainSignup = () => {
             />
           </div>
 
-          <h3 className="text-lg text-medium mb-2">What's your email</h3>
+          <h3 className="text-lg text-medium mb-2">What's our Captain's email</h3>
 
           <input
             required
