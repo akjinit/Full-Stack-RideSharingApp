@@ -1,4 +1,4 @@
-# 🚗 Uber Clone – Full Stack Ride Booking Platform
+# 🚗  Full Stack Ride Booking Platform
 
 This repository contains a **full-stack Uber clone** built to replicate the core functionality of a modern ride-hailing platform.  
 The project is designed with a **clean separation of frontend and backend**, following real-world production architecture.
