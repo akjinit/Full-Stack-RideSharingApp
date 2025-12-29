@@ -117,7 +117,7 @@ The request body should be sent as JSON with the following structure:
 
 ---
 
-### POST /user/login
+### POST /users/login
 
 #### Description
 

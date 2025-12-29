@@ -1,18 +1,34 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [captainData, setCaptainData] = useState("{}");
+  const { captain, setCaptain } = useContext(CaptainDataContext);
+  const navigate = useNavigate();
 
-  const submitHandler = (e) => {
+
+  const submitHandler = async (e) => {
     e.preventDefault();
 
-    setCaptainData({
+    const newCaptain = {
       email,
       password,
-    });
+    };
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/captains/login`,
+      newCaptain
+    );
+
+    if (response.status === 200) {
+      const data = response.data;
+      setCaptain(data.captain);
+      localStorage.setItem("token", data.token);
+      navigate("/captain-home");
+    }
   };
 
   return (
@@ -20,7 +36,9 @@ const CaptainLogin = () => {
       <div>
         <img className="w-23 mb-3" src="/uber_driver.svg" alt="" />
         <form action="" onSubmit={submitHandler}>
-          <h3 className="text-lg text-medium mb-2">What's our Captain's email</h3>
+          <h3 className="text-lg text-medium mb-2">
+            What's our Captain's email
+          </h3>
 
           <input
             required
