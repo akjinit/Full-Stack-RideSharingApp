@@ -225,7 +225,7 @@ The request body should be sent as JSON with the following structure:
 
 ---
 
-### GET /user/profile
+### GET /users/profile
 
 #### Description
 
