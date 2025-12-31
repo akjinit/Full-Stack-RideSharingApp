@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import LocationSearchPanel from "../Components/LocationSearchPanel";
 import VehiclePanel from "../Components/VehiclePanel";
 import ConfirmVehicle from "../Components/ConfirmVehicle";
+import WaitingForDriver from "../Components/WaitingForDriver";
+import LookingForDriver from "../Components/LookingForDriver";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -10,6 +12,8 @@ const Home = () => {
 
   const [vehiclePanelOpen, setvehiclePanelOpen] = useState(false);
   const [confirmVehiclePanel, setConfirmVehiclePanel] = useState(false);
+  const [lookingForDriverPanel, setlookingForDriverPanel] = useState(false);
+  const [waitingForDriver,setWatingForDriver] = useState(true);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -97,7 +101,11 @@ const Home = () => {
       <ConfirmVehicle
         confirmVehiclePanel={confirmVehiclePanel}
         setConfirmVehiclePanel={setConfirmVehiclePanel}
+        setlookingForDriverPanel={setlookingForDriverPanel}
       />
+
+      <WaitingForDriver waitingForDriver={waitingForDriver} setWatingForDriver={setWatingForDriver}/>
+      <LookingForDriver setlookingForDriverPanel={setlookingForDriverPanel} lookingForDriverPanel={lookingForDriverPanel} />
     </div>
   );
 };

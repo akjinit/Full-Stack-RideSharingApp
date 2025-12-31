@@ -1,16 +1,15 @@
 import React from "react";
 
-const ConfirmVehicle = (props) => {
-  const confirmVehiclePanel = props.confirmVehiclePanel;
-  const setConfirmVehiclePanel = props.setConfirmVehiclePanel;
-  const setlookingForDriverPanel = props.setlookingForDriverPanel;
+const LookingForDriver = (props) => {
+  const lookingForDriverPanel = props.lookingForDriverPanel;
   return (
     <div
       className={` ${
-        confirmVehiclePanel ? "" : "translate-y-full"
+        lookingForDriverPanel ? "" : "translate-y-full"
       } w-full  fixed z-10 bottom-0 bg-white px-5 py-9 rounded-2xl transition`}
     >
-      <h3 className="text-2xl font-semibold "> Confirm Your Ride </h3>
+      
+      <h3 className="text-2xl font-semibold "> Looking for a driver </h3>
       <div className="flex flex-col justify-center gap-5">
         <img src="car.png" className="w-40 m-auto" alt="" />
 
@@ -41,19 +40,9 @@ const ConfirmVehicle = (props) => {
             </div>
           </div>
         </div>
-
-        <button
-          onClick={() => {
-            setConfirmVehiclePanel(false);
-            setlookingForDriverPanel(true);
-          }}
-          className="w-full bg-green-400 p-2 text-white font-semibold"
-        >
-          Confirm
-        </button>
       </div>
     </div>
   );
 };
 
-export default ConfirmVehicle;
+export default LookingForDriver;
