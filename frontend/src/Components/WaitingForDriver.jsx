@@ -10,7 +10,9 @@ const WaitingForDriver = (props) => {
         waitingForDriver ? "" : "translate-y-full"
       } w-full  fixed z-10 bottom-0 bg-white px-5 py-9 rounded-2xl transition`}
     >
+
       <div className="captain-details flex justify-between">
+
         <img src="car.png" className="w-28 " alt="" />
         <div className="text-right">
           <h2 className="text-lg font-medium">Sarthak </h2>

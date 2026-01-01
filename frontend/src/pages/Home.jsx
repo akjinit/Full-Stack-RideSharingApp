@@ -13,7 +13,7 @@ const Home = () => {
   const [vehiclePanelOpen, setvehiclePanelOpen] = useState(false);
   const [confirmVehiclePanel, setConfirmVehiclePanel] = useState(false);
   const [lookingForDriverPanel, setlookingForDriverPanel] = useState(false);
-  const [waitingForDriver,setWatingForDriver] = useState(true);
+  const [waitingForDriver, setWatingForDriver] = useState(false);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -43,9 +43,8 @@ const Home = () => {
               setpickupPanelClose(true);
             }}
             src="arrow-down-wide-line.svg"
-            className={`w-6 absolute left-[47%] top-1  ${
-              pickupPanelOpen ? "hidden" : ""
-            }`}
+            className={`w-6 absolute left-[47%] top-1  ${pickupPanelOpen ? "hidden" : ""
+              }`}
             alt=""
           />
 
@@ -104,7 +103,7 @@ const Home = () => {
         setlookingForDriverPanel={setlookingForDriverPanel}
       />
 
-      <WaitingForDriver waitingForDriver={waitingForDriver} setWatingForDriver={setWatingForDriver}/>
+      <WaitingForDriver waitingForDriver={waitingForDriver} setWatingForDriver={setWatingForDriver} />
       <LookingForDriver setlookingForDriverPanel={setlookingForDriverPanel} lookingForDriverPanel={lookingForDriverPanel} />
     </div>
   );
