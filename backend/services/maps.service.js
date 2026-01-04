@@ -54,8 +54,8 @@ module.exports.getDistanceTime = async (origins, destinations) => {
 
         if (element.status === "OK") {
             return {
-                distance: element.distance.text,
-                duration: element.duration.text,
+                distance: element.distance.value,
+                duration: element.duration.value,
             }
         } else {
             throw new Error(`Unable to fetch distance and time: ${element.status}`);
