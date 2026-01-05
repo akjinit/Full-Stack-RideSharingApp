@@ -13,13 +13,18 @@ module.exports.createRide = async (userId, origin, destination, vehicleType) => 
     }
 
     const distanceTime = await mapService.getDistanceTime(origin, destination);
-    const currFare = await getFareEstimate(origin, destination);
+    const fare = {
+        car: this.calculateFare(distanceTime.distance, distanceTime.duration, 30, 8),
+        auto: this.calculateFare(distanceTime.distance, distanceTime.duration, 19, 5),
+        motorcycle: this.calculateFare(distanceTime.distance, distanceTime.duration, 10, 2)
+    };
 
     const ride = await rideModel.create({
         userId,
-        origin,
-        destination,
-        fare: currFare[vehicleType],
+        origin: distanceTime.origin,
+        destination: distanceTime.destination,
+        fare: fare[vehicleType].toFixed(2),
+        OTP : OTPGenerator(4),
     })
 
     return ride;
@@ -27,13 +32,23 @@ module.exports.createRide = async (userId, origin, destination, vehicleType) => 
 
 module.exports.getFareEstimate = async function (origin, destination) {
     const distanceTime = await mapService.getDistanceTime(origin, destination);
-
     const fare = {
-        car:    calculateFare(distanceTime.distance, distanceTime.time, 15, 8),
-        auto: calculateFare(distanceTime.distance, distanceTime.time, 8, 5),
-        motorcycle: calculateFare(distanceTime.distance, distanceTime.time, 5, 2)
+        car: this.calculateFare(distanceTime.distance, distanceTime.duration, 30, 8).toFixed(2),
+        auto: this.calculateFare(distanceTime.distance, distanceTime.duration, 19, 5).toFixed(2),
+        motorcycle: this.calculateFare(distanceTime.distance, distanceTime.duration, 10, 2).toFixed(2),
+        duration : Math.round(distanceTime.duration/60),
+        distance : (distanceTime.distance/1000).toFixed(2),
     };
 
     return fare;
 }
 
+
+
+function OTPGenerator(num) {
+    let otp = '';
+    for (let i = 0; i < num; i++) {
+        otp += Math.floor(Math.random() * 10).toString();
+    }
+    return otp;
+}

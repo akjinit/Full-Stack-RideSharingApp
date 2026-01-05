@@ -4,11 +4,13 @@ const VehiclePanel = (props) => {
   const setvehiclePanelOpen = props.setvehiclePanelOpen;
   const vehiclePanelOpen = props.vehiclePanelOpen;  
   const setConfirmVehiclePanel =  props.setConfirmVehiclePanel;
+  const fareDetails = props.fareDetails;
+  const createRide = props.createRide;
 
+  
   const confirmVehicleHandler = ()=>{
     setConfirmVehiclePanel(true);
     // setvehiclePanelOpen(false);
-
   }
 
   return (
@@ -26,7 +28,8 @@ const VehiclePanel = (props) => {
           className="w-5 opacity-75 absolute left-[50%]"
           alt=""
         />
-        <h3 className="text-2xl font-semibold mb-4 mt-4"> Choose a Vehicle</h3>
+        <h3 className="text-2xl font-semibold mb-4 mt-4"> Choose a Vehicle </h3>
+        <h3 className="text-xl font-medium mb-4 mt-4"> {fareDetails.distance} km away</h3>
 
         <div  onClick={confirmVehicleHandler} className="flex items-center  border-gray-100 active:border-black p-2 mb-2 border-4 rounded-xl">
           <img src="car.png" className="w-21" alt="" />
@@ -38,12 +41,12 @@ const VehiclePanel = (props) => {
               </span>
               4
             </h4>
-            <h5 className="font-medium text-sm">2 mins away</h5>
+            <h5 className="font-medium text-sm">{`${fareDetails.duration}  mins away`}</h5>
             <p className="font-medium text-xs text-gray-600">
               Affordable compact rides
             </p>
           </div>
-          <h2 className="text-lg font-semibold">Rs 193.20</h2>
+          <h2 className="text-lg font-semibold">{`₹${fareDetails.car}`}</h2>
         </div>
 
         <div onClick={confirmVehicleHandler} className="flex items-center border-gray-100 border-4 p-2 mb-2 active:border-black rounded-xl">
@@ -56,12 +59,12 @@ const VehiclePanel = (props) => {
               </span>{" "}
               1
             </h4>
-            <h5 className="font-medium text-sm">3 mins away</h5>
+            <h5 className="font-medium text-sm">{`${fareDetails.duration * 1.5}  mins away`}</h5>
             <p className="font-medium text-xs text-gray-600">
               Affordable motorcycle rides
             </p>
           </div>
-          <h2 className="text-lg font-semibold">Rs 65.20</h2>
+          <h2 className="text-lg font-semibold">{`₹${fareDetails.motorcycle}`}</h2>
         </div>
 
         <div onClick={confirmVehicleHandler} className="flex items-center border-gray-100 border-4 p-2 mb-2 active:border-black rounded-xl">
@@ -74,12 +77,12 @@ const VehiclePanel = (props) => {
               </span>{" "}
               3
             </h4>
-            <h5 className="font-medium text-sm">2 mins away</h5>
+            <h5 className="font-medium text-sm">{`${fareDetails.duration * 1.7} mins away`}</h5>
             <p className="font-medium text-xs text-gray-600">
               Affordable auto rides
             </p>
           </div>
-          <h2 className="text-lg font-semibold">Rs 118.28</h2>
+          <h2 className="text-lg font-semibold">{`₹${fareDetails.auto}`}</h2>
         </div>
       </div>
     </>

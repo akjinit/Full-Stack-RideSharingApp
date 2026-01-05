@@ -58,3 +58,4 @@ module.exports.getSuggestions = async (req, res, next) => {
         });
     }
 }
+

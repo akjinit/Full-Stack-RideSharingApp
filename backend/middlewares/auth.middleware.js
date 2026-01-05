@@ -12,7 +12,7 @@ module.exports.authUser = async function (req, res, next) {
 
   const isBlacklisted = await blacklistTokenModel.findOne({ token });
   if (isBlacklisted) {
-    return res.status(401).json({ message: "Unauthorised" });
+    return res.status(401).json({ message: "Token Blacklisted" });
   }
 
   try {
@@ -21,7 +21,7 @@ module.exports.authUser = async function (req, res, next) {
     req.user = user;
     return next();
   } catch (err) {
-    return res.status(401).json({ message: "Unauthorised" });
+    return res.status(401).json({ message: "Invalid Token" });
   }
 };
 
@@ -34,7 +34,7 @@ module.exports.authCaptain = async function (req, res, next) {
 
   const isBlacklisted = await blacklistTokenModel.findOne({ token });
   if (isBlacklisted) {
-    return res.status(401).json({ message: "Unauthorised" });
+    return res.status(401).json({ message: "Token Blacklisted" });
   }
 
   try {
@@ -43,6 +43,6 @@ module.exports.authCaptain = async function (req, res, next) {
     req.captain = captain;
     return next();
   } catch (err) {
-    return res.status(401).json({ message: "Unauthorised" });
+    return res.status(401).json({ message: "Invalid Token" });
   }
 };

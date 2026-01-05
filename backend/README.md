@@ -797,3 +797,84 @@ Cookie: token=<token>
 - These captain endpoints use `auth.middleware.js` (`authCaptain`) for protected routes
 - Blacklisting uses the `blacklistToken` model to prevent token reuse
 - Store tokens securely on the client side and remove them on logout
+
+---
+
+## Map Routes
+
+All map routes are protected (require a valid JWT via Authorization: Bearer <token> or cookie `token`). Validation is performed using express-validator.
+
+- GET /map/get-coordinates
+  - Query: address (string, min length 3) — required
+  - Description: Returns coordinates (lat/lng) for the provided address.
+  - Success: 200 with coordinates JSON
+  - Errors: 400 for validation, 401 for unauthorized, 500 for server errors
+  - Example:
+    ```bash
+    curl -G http://localhost:3000/map/get-coordinates \
+      --data-urlencode "address=1600 Amphitheatre Parkway, Mountain View, CA" \
+      -H "Authorization: Bearer <token>"
+    ```
+
+- GET /map/get-distance-time
+  - Query: origins (string, min length 3) — required
+  - Query: destinations (string, min length 3) — required
+  - Description: Returns distance and duration estimates between origins and destinations.
+  - Success: 200 with distance/time data
+  - Errors: 400 for validation, 401 for unauthorized, 500 for server errors
+  - Example:
+    ```bash
+    curl -G http://localhost:3000/map/get-distance-time \
+      --data-urlencode "origins=Origin Address" \
+      --data-urlencode "destinations=Destination Address" \
+      -H "Authorization: Bearer <token>"
+    ```
+
+- GET /map/get-suggestions
+  - Query: input (string, min length 1) — required
+  - Description: Returns address suggestions/autocomplete for the input string.
+  - Success: 200 with suggestions array
+  - Errors: 400 for validation, 401 for unauthorized, 500 for server errors
+  - Example:
+    ```bash
+    curl -G http://localhost:3000/map/get-suggestions \
+      --data-urlencode "input=Times Sq" \
+      -H "Authorization: Bearer <token>"
+    ```
+
+---
+
+## Ride Routes
+
+All ride routes are protected (require a valid JWT via Authorization: Bearer <token> or cookie `token`). Validation is performed using express-validator.
+
+- POST /rides/create
+  - Body (application/json):
+    - origin: string, min length 3 — required
+    - destination: string, min length 3 — required
+    - vehicleType: one of `car`, `auto`, `motorcycle` — required
+  - Description: Creates a ride request for the authenticated user.
+  - Success: 201 with ride object
+  - Errors: 400 for validation, 401 for unauthorized, 500 for server errors
+  - Example:
+    ```bash
+    curl -X POST http://localhost:3000/rides/create \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer <token>" \
+      -d '{"origin":"A Street 1","destination":"B Avenue 2","vehicleType":"car"}'
+    ```
+
+- GET /rides/fare-estimate
+  - Query:
+    - origin: string, min length 3 — required
+    - destination: string, min length 3 — required
+  - Description: Returns a fare estimate between origin and destination for the authenticated user.
+  - Success: 200 with fare estimate
+  - Errors: 400 for validation, 401 for unauthorized, 500 for server errors
+  - Example:
+    ```bash
+    curl -G http://localhost:3000/rides/fare-estimate \
+      --data-urlencode "origin=Origin Address" \
+      --data-urlencode "destination=Destination Address" \
+      -H "Authorization: Bearer <token>"
+    ```

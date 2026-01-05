@@ -51,9 +51,10 @@ module.exports.getDistanceTime = async (origins, destinations) => {
         }
 
         const element = response.data.rows[0].elements[0];
-
         if (element.status === "OK") {
             return {
+                origin: response.data.origin_addresses[0],
+                destination: response.data.destination_addresses[0],
                 distance: element.distance.value,
                 duration: element.duration.value,
             }
