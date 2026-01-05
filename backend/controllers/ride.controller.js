@@ -28,7 +28,7 @@ module.exports.getFareEstimate = async (req, res, next) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { origin, destination } = req.query;
+    const { origin, destination, vehicleType } = req.query;
     try {
         const fareEstimate = await mapService.getFareEstimate(origin, destination);
         res.status(200).json(fareEstimate);

@@ -24,6 +24,9 @@ module.exports.createRide = async (userId, origin, destination, vehicleType) => 
         origin: distanceTime.origin,
         destination: distanceTime.destination,
         fare: fare[vehicleType].toFixed(2),
+        duration: distanceTime.duration,
+        distance: distanceTime.distance,
+        vehicleType,
         OTP : OTPGenerator(4),
     })
 

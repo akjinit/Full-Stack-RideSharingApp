@@ -3,7 +3,7 @@ import React from "react";
 const WaitingForDriver = (props) => {
   const waitingForDriver = props.waitingForDriver;
   const setWatingForDriver = props.setWatingForDriver;
-  
+  const ride = props.ride;
   return (
     <div
       className={` ${

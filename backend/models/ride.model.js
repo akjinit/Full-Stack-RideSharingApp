@@ -28,6 +28,11 @@ const rideSchema = new mongoose.Schema({
     distance: {//in meters
         type: String,
     },
+    vehicleType: {
+        type: String,
+        enum: ['car', 'auto', 'motorcycle'],
+        required: true
+    },
     status: {
         type: String,
         enum: ['requested', 'accepted', 'in_progress', 'completed', 'cancelled'],

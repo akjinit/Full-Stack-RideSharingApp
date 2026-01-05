@@ -21,7 +21,8 @@ const Home = () => {
   const [destinationInputFocused, setDestinationInputFocused] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [fare, setFare] = useState({});
-
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [ride, setRide] = useState({});
 
   const fetchSuggestions = async (query) => {
     try {
@@ -60,8 +61,9 @@ const Home = () => {
 
   const createRide = async (vehicleType) => {
     try {
+      console.log("Creating ride with:", { pickup, destination, vehicleType });
       const response = await axios.post(`http://localhost:4000/rides/create`, {
-        pickup,
+        origin: pickup,
         destination,
         vehicleType,
       }, {
@@ -69,6 +71,8 @@ const Home = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+      console.log("Ride created successfully:", response.data);
+      setRide(response.data);
     }
     catch (err) {
       console.log("Error creating ride frontend:", err);
@@ -203,23 +207,35 @@ const Home = () => {
         </div>
       </div>
 
-      {/* vehicles */}
       <VehiclePanel
         setvehiclePanelOpen={setvehiclePanelOpen}
         vehiclePanelOpen={vehiclePanelOpen}
         setConfirmVehiclePanel={setConfirmVehiclePanel}
         fareDetails={fare}
-        createRide={createRide}
+        setSelectedVehicle={setSelectedVehicle}
       />
 
       <ConfirmVehicle
+        selectedVehicle={selectedVehicle}
+        fareDetails={fare}
+        pickup={pickup}
+        destination={destination}
+
         confirmVehiclePanel={confirmVehiclePanel}
         setConfirmVehiclePanel={setConfirmVehiclePanel}
         setlookingForDriverPanel={setlookingForDriverPanel}
+        createRide={createRide}
       />
 
-      <WaitingForDriver waitingForDriver={waitingForDriver} setWatingForDriver={setWatingForDriver} />
-      <LookingForDriver setlookingForDriverPanel={setlookingForDriverPanel} lookingForDriverPanel={lookingForDriverPanel} />
+      <WaitingForDriver
+        waitingForDriver={waitingForDriver}
+        setWatingForDriver={setWatingForDriver}
+      />
+      <LookingForDriver 
+      setlookingForDriverPanel={setlookingForDriverPanel} 
+      lookingForDriverPanel={lookingForDriverPanel} 
+      ride={ride}
+      />
     </div>
   );
 };
