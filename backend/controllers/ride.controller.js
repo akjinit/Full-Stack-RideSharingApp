@@ -1,6 +1,9 @@
 const rideService = require('../services/ride.service');
 const { validationResult } = require('express-validator');
-const mapService = require('../services/ride.service');
+const mapService = require('../services/maps.service');
+const { sendMessageToSocketId } = require('../socket');
+const rideModel = require('../models/ride.model');
+
 
 module.exports.createRide = async (req, res, next) => {
     const errors = validationResult(req);
@@ -11,7 +14,21 @@ module.exports.createRide = async (req, res, next) => {
     const userId = req.user._id;
     try {
         const ride = await rideService.createRide(userId, origin, destination, vehicleType);
-        res.status(201).json(ride);
+        const ridePopulatedByUser = await rideModel.findById(ride._id).populate('userId', '-password -socketId -__v');
+        res.status(201).json(ridePopulatedByUser);
+
+        const originCoord = await mapService.getAddressCoordinate(origin);
+        const { latitude, longitude } = originCoord;
+        const captainInRadius = await mapService.getCaptainsInTheRadius(latitude, longitude, 2);
+
+        ridePopulatedByUser.OTP = null; //hide OTP info when notifying captains
+
+        captainInRadius.forEach(captain => {
+            sendMessageToSocketId(captain.socketId, 'new-ride-request', ridePopulatedByUser);
+            console.log('Notified captain', captain._id, captain.socketId, captain.fullName, 'about new ride request');
+        });
+
+        //notify captains about new ride request
     }
     catch (err) {
         res.status(400).json({

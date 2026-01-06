@@ -66,14 +66,17 @@ const captainSchema = new mongoose.Schema({
   },
 
   location: {
-    lat: {
-      type: Number,
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+      required: true
     },
 
-    lng: {
-      type: Number,
-    },
-  },
+    coordinates: {
+      type: [Number]
+    }
+  }
 });
 
 captainSchema.methods.generateAuthToken = function () {
@@ -94,5 +97,7 @@ captainSchema.statics.hashPassword = async function (password) {
 
   return hash;
 };
+
+captainSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model("captain", captainSchema);

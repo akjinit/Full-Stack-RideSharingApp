@@ -17,6 +17,9 @@ const CaptainContext = ({ children }) => {
     },
   });
 
+  const token = localStorage.getItem("token");
+  
+
   return (
     <CaptainDataContext.Provider value={{ captain, setCaptain }}>
       {children}

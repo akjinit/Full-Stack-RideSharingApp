@@ -9,6 +9,8 @@ const LookingForDriver = (props) => {
     motorcycle: "motorbike.webp",
     auto: "auto.webp"
   };
+
+  
   return (
     <div
       className={` ${lookingForDriverPanel ? "" : "translate-y-full"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import LocationSearchPanel from "../Components/LocationSearchPanel";
 import VehiclePanel from "../Components/VehiclePanel";
 import ConfirmVehicle from "../Components/ConfirmVehicle";
@@ -6,6 +6,11 @@ import WaitingForDriver from "../Components/WaitingForDriver";
 import LookingForDriver from "../Components/LookingForDriver";
 import axios from "axios";
 import { useEffect } from "react";
+import { SocketDataContext } from "../context/SocketContext";
+import { UserDataContext } from "../context/UserContext";
+
+
+
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -23,6 +28,8 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [ride, setRide] = useState({});
+
+
 
   const fetchSuggestions = async (query) => {
     try {
@@ -58,6 +65,13 @@ const Home = () => {
       console.log("Error fetching fare estimate:", err);
     }
   }
+
+  const { sendMessage, recieveMessage } = useContext(SocketDataContext);
+  const {user} = useContext(UserDataContext);
+  useEffect(() => {
+    sendMessage('join', { userType: "user", userId: user._id });
+  }, [user]);
+
 
   const createRide = async (vehicleType) => {
     try {
@@ -231,10 +245,10 @@ const Home = () => {
         waitingForDriver={waitingForDriver}
         setWatingForDriver={setWatingForDriver}
       />
-      <LookingForDriver 
-      setlookingForDriverPanel={setlookingForDriverPanel} 
-      lookingForDriverPanel={lookingForDriverPanel} 
-      ride={ride}
+      <LookingForDriver
+        setlookingForDriverPanel={setlookingForDriverPanel}
+        lookingForDriverPanel={lookingForDriverPanel}
+        ride={ride}
       />
     </div>
   );

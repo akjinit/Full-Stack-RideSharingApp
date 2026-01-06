@@ -1,13 +1,52 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CaptainDetails from "../Components/CaptainDetails";
 import RidePopup from "../Components/RidePopup";
 import ConfirmRidePopup from "../Components/ConfirmRidePopup";
+import { CaptainDataContext } from "../context/CaptainContext";
+import { SocketDataContext } from "../context/SocketContext";
+
 
 
 const CaptainHome = () => {
-  const [ridePopupPanel, setRidePopupPanel] = useState(true);
+  const [ridePopupPanel, setRidePopupPanel] = useState(false);
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
+  const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
+  const [ride, setRide] = useState(null);
+  const { captain } = useContext(CaptainDataContext);
+
+  const updateLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        console.log("Updating location:", latitude, longitude);
+        sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude });
+      }, (err) => {
+        console.error("Error getting location:", err);
+      });
+    }
+  }
+
+  useEffect(() => {
+    sendMessage('join', { userType: "captain", userId: captain._id });
+    if (socket) {
+      recieveMessage('new-ride-request', (ride) => {
+        console.log("New ride request received:", ride);
+        setRidePopupPanel(true);
+      });
+    }
+  }, [captain, socket]);
+
+
+
+  useEffect(() => {
+    updateLocation();
+    const locationInterval = setInterval(() => {
+      updateLocation();
+    }, 10000);
+
+    return () => clearInterval(locationInterval);
+  }, []);
 
   return (
     <div className="h-screen ">
@@ -30,10 +69,10 @@ const CaptainHome = () => {
         <img src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" className="h-full w-full object-cover " />
       </div>
 
-      <div className="rider h-2/5 p-6 rounded-2xl">
+      <div className="rider  h-2/5 p-6 rounded-2xl">
         <CaptainDetails />
       </div>
-      <RidePopup ridePopupPanel={ridePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} setRidePopupPanel={setRidePopupPanel} />
+      <RidePopup ride={ride} ridePopupPanel={ridePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} setRidePopupPanel={setRidePopupPanel} />
       <ConfirmRidePopup confirmRidePopupPanel={confirmRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} />
     </div>
   );
