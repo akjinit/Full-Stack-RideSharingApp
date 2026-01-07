@@ -15,8 +15,6 @@ module.exports.createRide = async (req, res, next) => {
     try {
         const ride = await rideService.createRide(userId, origin, destination, vehicleType);
         const ridePopulatedByUser = await rideModel.findById(ride._id).populate('userId', '-password -socketId -__v');
-        console.log("Ride ");
-        console.log(ridePopulatedByUser);
         res.status(201).json(ridePopulatedByUser);
 
         const originCoord = await mapService.getAddressCoordinate(origin);
