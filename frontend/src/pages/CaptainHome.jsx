@@ -5,7 +5,7 @@ import RidePopup from "../Components/RidePopup";
 import ConfirmRidePopup from "../Components/ConfirmRidePopup";
 import { CaptainDataContext } from "../context/CaptainContext";
 import { SocketDataContext } from "../context/SocketContext";
-
+import axios from 'axios'
 
 
 const CaptainHome = () => {
@@ -19,7 +19,6 @@ const CaptainHome = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
-        console.log("Updating location:", latitude, longitude);
         sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude });
       }, (err) => {
         console.error("Error getting location:", err);
@@ -27,15 +26,39 @@ const CaptainHome = () => {
     }
   }
 
+
+  const acceptRideHandler = async () => {
+    setRidePopupPanel(false);
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/rides/accept-ride`,
+      {
+        rideId: ride._id,
+        captainId: captain._id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+
+    console.log(response.data);
+    setConfirmRidePopupPanel(true);
+  }
+
   useEffect(() => {
     sendMessage('join', { userType: "captain", userId: captain._id });
     if (socket) {
       recieveMessage('new-ride-request', (ride) => {
         console.log("New ride request received:", ride);
+        setRide(ride);
         setRidePopupPanel(true);
       });
     }
-  }, [captain, socket]);
+  }, [socket,captain]);
+
+
 
 
 
@@ -72,8 +95,8 @@ const CaptainHome = () => {
       <div className="rider  h-2/5 p-6 rounded-2xl">
         <CaptainDetails />
       </div>
-      <RidePopup ride={ride} ridePopupPanel={ridePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} setRidePopupPanel={setRidePopupPanel} />
-      <ConfirmRidePopup confirmRidePopupPanel={confirmRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} />
+      <RidePopup ride={ride} acceptRideHandler={acceptRideHandler} setRidePopupPanel={setRidePopupPanel} ridePopupPanel={ridePopupPanel} />
+      <ConfirmRidePopup ride={ride} confirmRidePopupPanel={confirmRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} />
     </div>
   );
 };

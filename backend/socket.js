@@ -21,6 +21,7 @@ const initializeSocket = (server) => {
                 const user = await userModel.findById(userId);
                 if (user) {
                     user.socketId = socket.id;
+                    console.log(user);
                     await user.save();
                     console.log(`User ${userId} joined with socket ID: ${socket.id}`);
                 }

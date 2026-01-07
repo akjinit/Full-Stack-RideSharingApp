@@ -17,4 +17,11 @@ router.get("/fare-estimate",
     authMiddleware.authUser,
     rideController.getFareEstimate
 );
+
+
+router.post('/accept-ride',
+    authMiddleware.authCaptain,
+    body('rideId').isMongoId().withMessage('Invalid ride ID'),
+    rideController.acceptRide
+);
 module.exports = router;

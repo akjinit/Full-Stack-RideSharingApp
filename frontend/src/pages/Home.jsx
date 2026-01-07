@@ -58,7 +58,7 @@ const Home = () => {
           origin,
           destination,
         }
-      });
+      });c
 
       return response.data;
     } catch (err) {
@@ -66,16 +66,24 @@ const Home = () => {
     }
   }
 
-  const { sendMessage, recieveMessage } = useContext(SocketDataContext);
-  const {user} = useContext(UserDataContext);
+  const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
+  const { user } = useContext(UserDataContext);
+
+
   useEffect(() => {
     sendMessage('join', { userType: "user", userId: user._id });
-  }, [user]);
+    if (socket) {
+        recieveMessage('ride-accepted', (ride) => {
+        setlookingForDriverPanel(false);
+        setWatingForDriver(true);
+        setRide(ride);
+      });
+    }
+  }, [socket, user]);
 
 
   const createRide = async (vehicleType) => {
     try {
-      console.log("Creating ride with:", { pickup, destination, vehicleType });
       const response = await axios.post(`http://localhost:4000/rides/create`, {
         origin: pickup,
         destination,
@@ -85,7 +93,6 @@ const Home = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log("Ride created successfully:", response.data);
       setRide(response.data);
     }
     catch (err) {
@@ -93,14 +100,14 @@ const Home = () => {
     }
   }
 
-  useEffect(() => {
+  useEffect(() => {  //pickup recomendation
     if (!pickup) {
       return;
     }
 
     const timer = setTimeout(async () => {
       fetchSuggestions(pickup);
-    }, 700);
+    }, 500);
 
     return () => {
       clearTimeout(timer);
@@ -108,14 +115,14 @@ const Home = () => {
   }, [pickup]);
 
 
-  useEffect(() => {
+  useEffect(() => {//destination recomendation
     if (!destination) {
       return;
     }
 
     const timer = setTimeout(async () => {
       fetchSuggestions(destination);
-    }, 700);
+    }, 500);
 
     return () => {
       clearTimeout(timer);
@@ -243,10 +250,9 @@ const Home = () => {
 
       <WaitingForDriver
         waitingForDriver={waitingForDriver}
-        setWatingForDriver={setWatingForDriver}
+        ride={ride}
       />
       <LookingForDriver
-        setlookingForDriverPanel={setlookingForDriverPanel}
         lookingForDriverPanel={lookingForDriverPanel}
         ride={ride}
       />

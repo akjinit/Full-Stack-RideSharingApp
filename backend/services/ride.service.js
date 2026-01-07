@@ -27,7 +27,7 @@ module.exports.createRide = async (userId, origin, destination, vehicleType) => 
         duration: distanceTime.duration,
         distance: distanceTime.distance,
         vehicleType,
-        OTP : OTPGenerator(4),
+        OTP: OTPGenerator(4),
     })
 
     return ride;
@@ -39,11 +39,32 @@ module.exports.getFareEstimate = async function (origin, destination) {
         car: this.calculateFare(distanceTime.distance, distanceTime.duration, 30, 8).toFixed(2),
         auto: this.calculateFare(distanceTime.distance, distanceTime.duration, 19, 5).toFixed(2),
         motorcycle: this.calculateFare(distanceTime.distance, distanceTime.duration, 10, 2).toFixed(2),
-        duration : Math.round(distanceTime.duration/60),
-        distance : (distanceTime.distance/1000).toFixed(2),
+        duration: Math.round(distanceTime.duration / 60),
+        distance: (distanceTime.distance / 1000).toFixed(2),
     };
 
     return fare;
+}
+
+
+module.exports.acceptRide = async (rideId, captainId) => {
+    if (!rideId) {
+        throw new Error('Ride is Required');
+    }
+
+    const ride = await rideModel.findOneAndUpdate({
+        _id: rideId
+    }, {
+        status: 'accepted',
+        captainId
+    });
+
+    const updatedRide = await rideModel.findById(rideId).populate('userId').populate('captainId').select('+OTP');
+    if(!updatedRide){
+        throw new Error('Error in accepting ride');
+    }
+
+    return updatedRide;
 }
 
 
