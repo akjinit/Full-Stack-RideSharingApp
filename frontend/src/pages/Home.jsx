@@ -69,7 +69,7 @@ const Home = () => {
 
   const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
   const { user } = useContext(UserDataContext);
-
+  
 
   useEffect(() => {
     sendMessage('join', { userType: "user", userId: user._id });
@@ -79,10 +79,16 @@ const Home = () => {
         setWatingForDriver(true);
         setRide(ride);
       });
-      recieveMessage('ride-started',(ride) => {
+      recieveMessage('ride-started', (ride) => {
         setWatingForDriver(false);
-        navigate('/riding');
-      })
+
+        navigate('/riding', {
+          state: {
+            ride
+          }
+        });
+      });
+
     }
   }, [socket, user]);
 

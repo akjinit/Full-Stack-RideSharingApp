@@ -60,31 +60,61 @@ module.exports.acceptRide = async (rideId, captainId) => {
     });
 
     const updatedRide = await rideModel.findById(rideId).populate('userId').populate('captainId').select('+OTP');
-    if(!updatedRide){
+    if (!updatedRide) {
         throw new Error('Error in accepting ride');
     }
 
     return updatedRide;
 }
 
-module.exports.startRide = async ({rideId ,OTP,captain}) => {
-    if(!rideId || !OTP){
+module.exports.startRide = async ({ rideId, OTP, captain }) => {
+    if (!rideId || !OTP) {
         throw new Error('Ride id and OTP are required');
     }
 
     const ride = await rideModel.findById(rideId).populate('captainId').populate('userId').select('+OTP');
-    if(!ride){
+    if (!ride) {
         throw new Error('Ride not found');
     }
 
 
     console.log(ride);
-    if(ride.status !== 'accepted' || ride.OTP !== OTP){
+    if (ride.status !== 'accepted' || ride.OTP !== OTP) {
         throw new Error('Ride not Accepted Captain may not be authorised to accept ride');
     }
 
     ride.status = 'in_progress'
     await ride.save();
+
+    return ride;
+}
+
+
+module.exports.endRide = async ({ rideId, captain }) => {
+    if (!rideId) {
+        throw new Error('Ride id  required');
+    }
+
+    const ride = await rideModel.findOne({
+        _id: rideId,
+        captainId: captain._id
+    }).populate('userId');
+    
+    if (!ride) {
+        throw new Error('Ride not ended');
+    }
+
+    if (ride.status !== 'in_progress') {
+        throw new Error('Ride not ongoing');
+    }
+
+    await rideModel.findByIdAndUpdate(
+        {
+            _id: rideId
+        },{
+            status : 'completed'
+        }
+    )
 
     return ride;
 }

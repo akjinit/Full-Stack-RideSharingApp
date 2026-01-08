@@ -32,7 +32,12 @@ const ConfirmRidePopup = (props) => {
             }
         });
         if (response.status == 200) {
-            navigate('/captain-riding');
+            navigate('/captain-riding', {
+                state: {
+                    ride,
+                    otpVerified: true
+                }
+            });
         }
     }
 
