@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 const Riding = () => {
   return (
     <div className="h-screen ">
+
       <div className="h-1/2">
         <Link to="/home">
           <img
@@ -19,6 +20,8 @@ const Riding = () => {
         />
       </div>
       <div className="ride h-1/2 p-4">
+        <h3 className="text-2xl font-semibold mb-5"> Ride Ongoing </h3>
+
         <div className="captain-details flex justify-between">
           <img src="car.png" className="w-28 " alt="" />
 

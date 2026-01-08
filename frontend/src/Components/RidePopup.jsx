@@ -11,7 +11,7 @@ const RidePopup = (props) => {
         <div
             className={` ${ridePopupPanel ? "" : "translate-y-full"} w-full   fixed z-10 bottom-0 bg-white px-5 py-9 rounded-2xl transition`}
         >
-            <h3 className="text-2xl font-semibold mb-5"> New Ride Avilable! </h3>
+            <h3 className="text-2xl font-semibold mb-c5"> New Ride Avilable! </h3>
             <div className='bg-yellow-300 rounded-lg p-4 flex items-center my-2 justify-between'>
                 <div className='flex items-center gap-3'>
                     <img className="h-10 w-10 object-cover rounded-full " src="sample-user.webp" alt="" />

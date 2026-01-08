@@ -67,7 +67,27 @@ module.exports.acceptRide = async (rideId, captainId) => {
     return updatedRide;
 }
 
+module.exports.startRide = async ({rideId ,OTP,captain}) => {
+    if(!rideId || !OTP){
+        throw new Error('Ride id and OTP are required');
+    }
 
+    const ride = await rideModel.findById(rideId).populate('captainId').populate('userId').select('+OTP');
+    if(!ride){
+        throw new Error('Ride not found');
+    }
+
+
+    console.log(ride);
+    if(ride.status !== 'accepted' || ride.OTP !== OTP){
+        throw new Error('Ride not Accepted Captain may not be authorised to accept ride');
+    }
+
+    ride.status = 'in_progress'
+    await ride.save();
+
+    return ride;
+}
 
 function OTPGenerator(num) {
     let otp = '';

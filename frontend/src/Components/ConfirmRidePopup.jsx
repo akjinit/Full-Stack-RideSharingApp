@@ -1,5 +1,6 @@
+import axios from 'axios';
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 
@@ -9,9 +10,30 @@ const ConfirmRidePopup = (props) => {
     const setConfirmRidePopupPanel = props.setConfirmRidePopupPanel;
     const ride = props.ride;
     const user = ride?.userId;
+    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
 
-    const submitHandler = function (e) {
+    const submitHandler = async function (e) {
         e.preventDefault();
+        if (OTP.length != 4) {
+            return;
+        }
+
+        setConfirmRidePopupPanel(false);
+        console.log(OTP);
+
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
+            params: {
+                rideId: ride?._id,
+                OTP: OTP
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (response.status == 200) {
+            navigate('/captain-riding');
+        }
     }
 
 
@@ -23,7 +45,7 @@ const ConfirmRidePopup = (props) => {
                     <img className="h-10 w-10 object-cover rounded-full " src="sample-user.webp" alt="" />
                     <h2 className='text-lg font-medium'>{`${user?.fullName.firstName} ${user?.fullName.lastName}`}</h2>
                 </div>
-                <h5 className='text-lg font-semibold'>{`${(ride?.distance/1000).toFixed(2)} KM `}</h5>
+                <h5 className='text-lg font-semibold'>{`${(ride?.distance / 1000).toFixed(2)} KM `}</h5>
             </div>
             <div className="flex flex-col justify-center gap-5">
 
@@ -54,11 +76,16 @@ const ConfirmRidePopup = (props) => {
                         setOTP(e.target.value);
                     }} className="bg-[#eee] px-6 py-4 font-mono text-base rounded-lg w-full mt-3" placeholder='Enter OTP' />
                     <div className='flex flex-col mt-9 gap-3'>
-                        <Link to={'/captain-riding'} className="w-full text-center bg-green-600 p-3 text-white font-semibold rounded">Confirm</Link>
+                        <button
+                            type='submit'
+                            className="w-full bg-green-600 p-3 text-white font-semibold rounded">
+                            Confirm
+                        </button>
                         <button
                             onClick={() => {
                                 setConfirmRidePopupPanel(false);
                             }}
+                            type='button'
                             className="w-full bg-red-600 p-3 text-white font-semibold rounded"
                         >
                             Cancel

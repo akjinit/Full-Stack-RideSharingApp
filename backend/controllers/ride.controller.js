@@ -5,6 +5,25 @@ const { sendMessageToSocketId } = require('../socket');
 const rideModel = require('../models/ride.model');
 
 
+module.exports.startRide = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { rideId, OTP } = req.query;
+
+    try {
+        const ride = await rideService.startRide({ rideId, OTP, captain: req.captain });
+        console.log(ride.userId.socketId);
+        sendMessageToSocketId(ride.userId.socketId,'ride-started',ride);
+
+        return res.status(200).json(ride);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+
 module.exports.createRide = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -67,7 +86,7 @@ module.exports.acceptRide = async (req, res, next) => {
 
     try {
         const ride = await rideService.acceptRide(rideId, req.captain._id);
-        
+
         const userSocket = ride.userId?.socketId;
         sendMessageToSocketId(userSocket, 'ride-accepted', ride);
         return res.status(200).json(ride);
@@ -78,3 +97,4 @@ module.exports.acceptRide = async (req, res, next) => {
         });
     }
 }
+

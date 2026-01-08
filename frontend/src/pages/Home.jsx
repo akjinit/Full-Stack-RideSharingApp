@@ -8,6 +8,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { SocketDataContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -29,7 +30,7 @@ const Home = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [ride, setRide] = useState({});
 
-
+  const navigate = useNavigate();
 
   const fetchSuggestions = async (query) => {
     try {
@@ -50,7 +51,7 @@ const Home = () => {
 
   const fetchFareEstimate = async (origin, destination) => {
     try {
-      const response = await axios.get(`http://localhost:4000/rides/fare-estimate`, {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/fare-estimate`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -58,7 +59,7 @@ const Home = () => {
           origin,
           destination,
         }
-      });c
+      });
 
       return response.data;
     } catch (err) {
@@ -73,18 +74,22 @@ const Home = () => {
   useEffect(() => {
     sendMessage('join', { userType: "user", userId: user._id });
     if (socket) {
-        recieveMessage('ride-accepted', (ride) => {
+      recieveMessage('ride-accepted', (ride) => {
         setlookingForDriverPanel(false);
         setWatingForDriver(true);
         setRide(ride);
       });
+      recieveMessage('ride-started',(ride) => {
+        setWatingForDriver(false);
+        navigate('/riding');
+      })
     }
   }, [socket, user]);
 
 
   const createRide = async (vehicleType) => {
     try {
-      const response = await axios.post(`http://localhost:4000/rides/create`, {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
         origin: pickup,
         destination,
         vehicleType,
