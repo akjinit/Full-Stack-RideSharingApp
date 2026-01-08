@@ -1,32 +1,35 @@
 # 🚖 Real-Time Ride Booking System 
 
-A **full-stack, real-time ride booking platform** inspired by Uber, built with **secure authentication**, **Socket.IO–based real-time communication**, **MongoDB geospatial queries**, and **OTP-based ride verification**.
+A **full-stack, real-time ride booking platform** inspired by Uber, built to explore how real-world ride-hailing systems work.  
+It focuses on **authentication**, **real-time communication using Socket.IO**, **MongoDB geospatial queries**, and **OTP-based ride verification**.
 
-This project demonstrates **production-grade system design**, not just CRUD APIs.
+This project was built as a learning-focused implementation of a realistic system, going beyond simple CRUD APIs.
 
 ---
 
 ## 📌 Key Highlights
 
-- 🔐 Heavy authentication & authorization (JWT + roles)
+- 🔐 JWT-based authentication with role separation
 - 🔄 Real-time ride lifecycle using Socket.IO
-- 🌍 Geospatial captain discovery (MongoDB)
-- 🔑 OTP-based secure ride start
+- 🌍 Geospatial captain discovery using MongoDB
+- 🔑 OTP-based ride start verification
 - 👥 Separate User and Captain (Driver) flows
-- 📱 Realistic UI showing all ride states
+- 📱 UI reflecting different ride states
 - 🚀 Live tracking feature planned next
 
 ---
 
 ## 🧠 Project Overview
 
-The system simulates a real-world cab booking platform where:
+The system simulates the core flow of a cab booking platform where:
 
 - Users can request rides
 - Nearby captains receive ride requests in real time
-- Captains accept/reject rides
-- Ride starts only after OTP verification
-- Ride state updates are synced instantly between user & captain
+- Captains can accept or reject rides
+- Rides start only after OTP verification
+- Ride state updates are synced instantly between user and captain
+
+The goal was to understand how such systems behave end-to-end rather than just building APIs.
 
 ---
 
@@ -35,46 +38,36 @@ The system simulates a real-world cab booking platform where:
 ### 👤 User Flow
 
 #### Confirm Ride
-![Confirm Ride](demo-images/confirm-ride.png)
 
 #### Looking for a Driver
-![Looking for Driver](demo-images/looking-for-driver.png)
 
 #### Waiting for Driver
-![Waiting for Driver](demo-images/waiting-for-driver.png)
 
 ---
 
 ### 🧑‍✈️ Captain Flow
 
 #### New Ride Available
-![New Ride Available](demo-images/new-ride-available.png)
 
 #### OTP Verification
-![OTP Verification](demo-images/otp-verification.png)
 
 ---
 
 ### 🚗 Ride Lifecycle
 
 #### Ride Ongoing
-![Ride Ongoing](demo-images/ride-ongoing.png)
 
 #### Ride Ongoing (User View)
-![Ride Ongoing User](demo-images/ride-for-user-ongoing.png)
 
 #### Finish Ride
-![Finish Ride](demo-images/finish-ride.png)
 
 ---
 
 ### 💰 Dynamic Features
 
 #### Dynamic Fare Calculation
-![Dynamic Fares](demo-images/dynamic-fares.png)
 
 #### Dynamic Location Search
-![Dynamic Search](demo-images/dynamic-search.png)
 
 ---
 
@@ -85,32 +78,32 @@ The system simulates a real-world cab booking platform where:
 - JWT-based authentication
 - Role-based authorization (User / Captain)
 - Protected routes using middleware
-- Token validation on:
+- Token validation during:
   - Ride creation
   - Ride acceptance
   - Ride start
   - Ride completion
 
-This prevents unauthorized access, ride spoofing, and state manipulation.
+These checks help ensure that only valid users and captains can perform allowed actions at each stage of a ride.
 
 ---
 
 ## 🔄 Real-Time Communication (Socket.IO)
 
-Socket.IO acts as the **real-time backbone** of the system.
+Socket.IO is used to keep users and captains in sync during the ride lifecycle.
 
 ### Socket Events
 
 | Event | Description |
 |------|------------|
-| `join` | User/Captain joins socket room |
+| `join` | User/Captain joins a socket room |
 | `ride-created` | Notifies nearby captains |
-| `ride-accepted` | Locks ride to one captain |
+| `ride-accepted` | Assigns ride to one captain |
 | `ride-started` | Ride begins after OTP verification |
-| `ride-completed` | Syncs ride completion |
+| `ride-completed` | Updates both sides on completion |
 
 ### Architecture Pattern
-- Pub-Sub using socket rooms:
+- Pub-Sub style communication using socket rooms:
   - `user:<userId>`
   - `captain:<captainId>`
 
@@ -119,54 +112,54 @@ Socket.IO acts as the **real-time backbone** of the system.
 ## 🌍 Geospatial Queries (MongoDB)
 
 - MongoDB geospatial indexing
-- Captains stored with live coordinates
+- Captains stored with their current coordinates
 - Nearby captains fetched using location-based queries
 
-This ensures scalability and realistic ride allocation.
+This allows basic proximity-based ride matching.
 
 ---
 
 ## 🔑 OTP-Based Ride Start
 
-- OTP generated server-side
+- OTP generated on the server
 - Ride cannot start without OTP verification
-- OTP validated before transitioning ride to ONGOING
+- OTP is validated before moving the ride to ONGOING state
 
-This adds a production-level security layer.
+This was added to simulate a common real-world safety step.
 
 ---
 
 ## 🚦 Ride State Flow
-IDLE
-→ RIDE_REQUESTED
-→ DRIVER_ASSIGNED
-→ OTP_VERIFIED
-→ RIDE_ONGOING
-→ RIDE_COMPLETED
 
+IDLE  
+→ RIDE_REQUESTED  
+→ DRIVER_ASSIGNED  
+→ OTP_VERIFIED  
+→ RIDE_ONGOING  
+→ RIDE_COMPLETED  
 
-Each transition is validated on the backend and synced in real time.
+Each state change is validated on the backend and reflected in real time on the client.
 
 ---
 
 ## 👤 User Features
 
-- Create ride
-- View fare and distance
+- Create ride requests
+- View estimated fare and distance
 - Receive live updates:
   - Driver assigned
   - Ride started
   - Ride completed
-- OTP-based safety verification
+- OTP-based ride verification
 
 ---
 
 ## 🧑‍✈️ Captain Features
 
 - Receive nearby ride requests
-- Accept / Reject rides
+- Accept or reject rides
 - View pickup, drop, distance, and fare
-- Start ride only after OTP
+- Start ride only after OTP verification
 - Complete ride securely
 
 ---
@@ -191,5 +184,3 @@ Each transition is validated on the backend and synced in real time.
 - JWT
 - Middleware-based route protection
 - OTP verification
-
----
