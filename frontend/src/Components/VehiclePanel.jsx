@@ -84,7 +84,7 @@ const VehiclePanel = (props) => {
               </span>{" "}
               3
             </h4>
-            <h5 className="font-medium text-sm">{`${fareDetails.duration * 1.7} mins away`}</h5>
+            <h5 className="font-medium text-sm">{`${fareDetails.duration * 1.6} mins away`}</h5>
             <p className="font-medium text-xs text-gray-600">
               Affordable auto rides
             </p>
