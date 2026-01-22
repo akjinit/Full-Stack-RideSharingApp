@@ -24,7 +24,7 @@ The system simulates a real-world cab booking platform where:
 
 - Users can request rides
 - Nearby captains receive ride requests in real time
-- Captains accept/reject rides
+- Captains accept./reject rides
 - Ride starts only after OTP verification
 - Ride state updates are synced instantly between user & captain
 
@@ -35,46 +35,46 @@ The system simulates a real-world cab booking platform where:
 ### 👤 User Flow
 
 #### Confirm Ride
-![Confirm Ride](demo-images/confirm-ride.png)
+![Confirm Ride](./confirm-ride.png)
 
 #### Looking for a Driver
-![Looking for Driver](demo-images/looking-for-driver.png)
+![Looking for Driver](./looking-for-driver.png)
 
 #### Waiting for Driver
-![Waiting for Driver](demo-images/waiting-for-driver.png)
+![Waiting for Driver](./waiting-for-driver.png)
 
 ---
 
 ### 🧑‍✈️ Captain Flow
 
 #### New Ride Available
-![New Ride Available](demo-images/new-ride-available.png)
+![New Ride Available](./new-ride-available.png)
 
 #### OTP Verification
-![OTP Verification](demo-images/otp-verification.png)
+![OTP Verification](./otp-verification.png)
 
 ---
 
 ### 🚗 Ride Lifecycle
 
 #### Ride Ongoing
-![Ride Ongoing](demo-images/ride-ongoing.png)
+![Ride Ongoing](./ride-ongoing.png)
 
 #### Ride Ongoing (User View)
-![Ride Ongoing User](demo-images/ride-for-user-ongoing.png)
+![Ride Ongoing User](./ride-for-user-ongoing.png)
 
 #### Finish Ride
-![Finish Ride](demo-images/finish-ride.png)
+![Finish Ride](./finish-ride.png)
 
 ---
 
 ### 💰 Dynamic Features
 
 #### Dynamic Fare Calculation
-![Dynamic Fares](demo-images/dynamic-fares.png)
+![Dynamic Fares](./dynamic-fares.png)
 
 #### Dynamic Location Search
-![Dynamic Search](demo-images/dynamic-search.png)
+![Dynamic Search](./dynamic-search.png)
 
 ---
 
@@ -83,7 +83,7 @@ The system simulates a real-world cab booking platform where:
 ### Security Features Implemented
 
 - JWT-based authentication
-- Role-based authorization (User / Captain)
+- Role-based authorization (User ./ Captain)
 - Protected routes using middleware
 - Token validation on:
   - Ride creation
@@ -103,7 +103,7 @@ Socket.IO acts as the **real-time backbone** of the system.
 
 | Event | Description |
 |------|------------|
-| `join` | User/Captain joins socket room |
+| `join` | User./Captain joins socket room |
 | `ride-created` | Notifies nearby captains |
 | `ride-accepted` | Locks ride to one captain |
 | `ride-started` | Ride begins after OTP verification |
@@ -164,7 +164,7 @@ Each transition is validated on the backend and synced in real time.
 ## 🧑‍✈️ Captain Features
 
 - Receive nearby ride requests
-- Accept / Reject rides
+- Accept ./ Reject rides
 - View pickup, drop, distance, and fare
 - Start ride only after OTP
 - Complete ride securely
