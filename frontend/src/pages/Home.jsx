@@ -9,8 +9,27 @@ import { useEffect } from "react";
 import { SocketDataContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from 'leaflet'
 
 
+const vehicleImageMap = {
+  location: "./location-marker.png",
+  car: "car.png",
+  motorcycle: "motorbike.webp",
+  auto: "auto.webp"
+};
+
+
+const leafLetIcons = {};
+
+for (const key in vehicleImageMap) {
+  leafLetIcons[key] = L.icon({
+    iconUrl: vehicleImageMap[key],
+    iconSize: key !== "location"? [50, 30] : [70,70],
+    iconAnchor: key !== "location"? [25, 15] : [35,35],
+  })
+}
 
 
 const Home = () => {
@@ -29,8 +48,28 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [ride, setRide] = useState({});
-
+  const [location, setLocation] = useState({ lat: 22.961074, lng: 88.433524 });
+  const [drivers, setDrivers] = useState([]);
   const navigate = useNavigate();
+
+        console.log(drivers);
+
+
+  const updateLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        setLocation({
+          lat: latitude,
+          lng: longitude
+        })
+        // sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude });
+      }, (err) => {
+        console.error("Error getting location:", err);
+      });
+    }
+  }
+
 
   const fetchSuggestions = async (query) => {
     try {
@@ -69,7 +108,7 @@ const Home = () => {
 
   const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
   const { user } = useContext(UserDataContext);
-  
+
 
   useEffect(() => {
     sendMessage('join', { userType: "user", userId: user._id });
@@ -79,6 +118,36 @@ const Home = () => {
         setWatingForDriver(true);
         setRide(ride);
       });
+
+      recieveMessage('vehicle', ({ captainId, vehicle, latitude, longitude }) => {
+        console.log(`recieved vehicle`, { captainId, vehicle, latitude, longitude });
+
+        setDrivers((prev) => {
+          const existing = prev.find(d => d.captainId === captainId);
+
+          if (existing) {
+            // update location
+            return prev.map(d =>
+              d.captainId === captainId
+                ? { ...d, lat: latitude, lng: longitude, lastSeen: Date.now() }
+                : d
+            );
+          }
+
+          // new driver
+          return [
+            ...prev,
+            {
+              captainId,
+              vehicle,
+              lat: latitude,
+              lng: longitude,
+              lastSeen: Date.now()
+            }
+          ];
+        });
+      });
+
       recieveMessage('ride-started', (ride) => {
         setWatingForDriver(false);
 
@@ -88,9 +157,34 @@ const Home = () => {
           }
         });
       });
-
     }
-  }, [socket, user]);
+  }, [socket, user]);   //all socket stuff
+
+
+  useEffect(() => {
+    updateLocation();
+    const locationInterval = setInterval(() => {
+      updateLocation();
+    }, 10000);
+
+    return () => clearInterval(locationInterval);
+  }, []);
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+
+      setDrivers((prev) =>
+        prev.filter(
+          (d) => now - d.lastSeen < 10 * 60 * 1000 // 10 minutes
+        )
+      );
+    }, 30 * 1000); // run cleanup every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
 
 
   const createRide = async (vehicleType) => {
@@ -146,24 +240,46 @@ const Home = () => {
   };
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-screen">
       <img
         className="w-30 absolute "
         src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
         alt=""
       />
 
-      <div className="h-screen w-screen">
+      <div className="h-screen w-screen absolute z-0">
         {/* image for temp use */}
-        <img
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
-          className="h-full w-full object-cover "
-        />
+        <MapContainer
+          center={[location.lat, location.lng]}
+          zoom={14}
+          className="h-full w-full "
+        >
+
+          <TileLayer
+            attribution="© OpenStreetMap"
+            className=""
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          <Marker position={[location.lat, location.lng]} icon={leafLetIcons.location}>
+          </Marker>
+
+
+          {drivers.map((d) => (<Marker position={[d.lat, d.lng]} icon={leafLetIcons[d.vehicle]}></Marker>))}
+
+          {/* captainId,
+              vehicle,
+              lat: latitude,
+              lng: longitude,
+              lastSeen: Date.now() */}
+
+        </MapContainer>
+
+
       </div>
 
-      <div className=" flex flex-col justify-end h-screen bottom-0 absolute w-full">
-        <div className="min-h-[20%] p-4 bg-white relative rounded-t-2xl">
+      <div className=" flex  flex-col justify-end h-screen bottom-0 absolute w-full">
+        <div className=" min-h-[20%] p-4 bg-white relative rounded-t-2xl">
           <img
             onClick={() => {
               setpickupPanelClose(true);

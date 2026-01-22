@@ -19,19 +19,29 @@ const initializeSocket = (server) => {
             const { userId, userType } = data;
             if (userType === "user") {
                 const user = await userModel.findById(userId);
+                socket.join('users');
                 if (user) {
                     user.socketId = socket.id;
-                    console.log(user);
                     await user.save();
                     console.log(`User ${userId} joined with socket ID: ${socket.id}`);
                 }
+
             } else if (userType === "captain") {
                 const captain = await captainModel.findById(userId);
+
+                socket.join('captains');
+
                 if (captain) {
                     captain.socketId = socket.id;
                     await captain.save();
                     console.log(`Captain ${userId} joined with socket ID: ${socket.id}`);
+
                 }
+
+                socket.on('watch-captain', ({ captainId,vehicle, latitude, longitude }) => {
+                    console.log(`captain watched `, { captainId,vehicle, latitude, longitude });
+                    io.to('users').emit('vehicle', { captainId,vehicle, latitude, longitude });
+                })
             }
         })
 
@@ -62,6 +72,9 @@ const initializeSocket = (server) => {
             }
 
         })
+
+
+
     }
     );
 };

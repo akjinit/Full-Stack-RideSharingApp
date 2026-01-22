@@ -5,6 +5,15 @@ import RidePopup from "../Components/RidePopup";
 import ConfirmRidePopup from "../Components/ConfirmRidePopup";
 import { CaptainDataContext } from "../context/CaptainContext";
 import { SocketDataContext } from "../context/SocketContext";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from 'leaflet'
+
+const icon = L.icon({
+  iconUrl: './location-marker.png',
+  iconSize: [40, 40],
+  iconAnchor: [20, 20]
+});
+
 import axios from 'axios'
 
 
@@ -14,11 +23,23 @@ const CaptainHome = () => {
   const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
   const [ride, setRide] = useState(null);
   const { captain } = useContext(CaptainDataContext);
+  console.log(captain);
+  const [location, setLocation] = useState({ lat: 22.961074, lng: 88.433524 });
+
 
   const updateLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
+        setLocation({
+          lat: latitude,
+          lng: longitude
+        })
+
+        if (captain.status != 'riding') {
+          sendMessage('watch-captain', { captainId: captain._id, vehicle: captain?.vehicle.vehicleType, latitude, longitude });
+          console.log(`watch-captain`, { captainId: captain._id, vehicle: captain?.vehicle.vehicleType, latitude, longitude });
+        }
         sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude });
       }, (err) => {
         console.error("Error getting location:", err);
@@ -56,23 +77,22 @@ const CaptainHome = () => {
         setRidePopupPanel(true);
       });
     }
-  }, [socket,captain]);
-
-
-
-
+  }, [socket, captain]);
 
   useEffect(() => {
     updateLocation();
     const locationInterval = setInterval(() => {
       updateLocation();
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(locationInterval);
   }, []);
 
+
+
+
   return (
-    <div className="h-screen ">
+    <div className="h-screen relative">
       <div className="h-3/5">
         <div className="w-full px-3 fixed flex items-center justify-between">
           <img
@@ -89,14 +109,33 @@ const CaptainHome = () => {
             />
           </Link>
         </div>
-        <img src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" className="h-full w-full object-cover " />
+        <div className="h-screen w-screen absolute z-0">
+          {/* image for temp use */}
+          <MapContainer
+            center={[location.lat, location.lng]}
+            zoom={14}
+            className="h-full w-full "
+          >
+
+            <TileLayer
+              attribution="© OpenStreetMap"
+              className=""
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            <Marker position={[location.lat, location.lng]} icon={icon}>
+            </Marker>
+
+          </MapContainer>
+
+        </div>
       </div>
 
-      <div className="rider  h-2/5 p-6 rounded-2xl">
+      <div className="rider  h-2/5 p-6 rounded-2xl absolute bg-white">
         <CaptainDetails />
       </div>
       <RidePopup ride={ride} acceptRideHandler={acceptRideHandler} setRidePopupPanel={setRidePopupPanel} ridePopupPanel={ridePopupPanel} />
-      <ConfirmRidePopup ride={ride}  confirmRidePopupPanel={confirmRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} />
+      <ConfirmRidePopup ride={ride} confirmRidePopupPanel={confirmRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} />
     </div>
   );
 };
