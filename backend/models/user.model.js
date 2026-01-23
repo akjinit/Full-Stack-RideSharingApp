@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  
+  rideId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'ride',
+    default: null
+  },
 
   password: {
     type: String,
@@ -29,12 +35,19 @@ const userSchema = new mongoose.Schema({
 
   socketId: {
     type: String,
-    default : null
+    default: null
   },
+
+  userState: {
+    type: String,
+    enum: ['active', 'inactive', 'riding'],
+    default: 'active',
+    required: true
+  }
 });
 
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET,{expiresIn : "24h"});
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
   return token;
 };
 

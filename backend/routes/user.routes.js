@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
+const { body,query } = require("express-validator");
 const userController = require("../controllers/user.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
+const mapController = require("../controllers/map.controller");
 
 router.post(
   "/register",
@@ -17,6 +18,23 @@ router.post(
   ],
   userController.registerUser
 ); //register route
+
+
+router.get(
+  '/get-nearby-captains',
+  [
+    query('lat')
+      .isFloat({ min: -90, max: 90 })
+      .withMessage('Invalid latitude'),
+
+    query('lng')
+      .isFloat({ min: -180, max: 180 })
+      .withMessage('Invalid longitude'),
+  ],
+  authMiddleware.authUser,
+  mapController.getNearbyDrivers
+);
+
 
 router.post(
   "/login",

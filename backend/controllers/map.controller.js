@@ -23,7 +23,7 @@ module.exports.getCoordinates = async (req, res, next) => {
 
 module.exports.getDistanceTime = async (req, res, next) => {
     const errors = validationResult(req);
-    
+
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
@@ -60,3 +60,23 @@ module.exports.getSuggestions = async (req, res, next) => {
     }
 }
 
+
+module.exports.getNearbyDrivers = async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { lat, lng } = req.query;
+    try {
+        const captains = await mapService.getCaptainsInTheRadius(lat, lng, 2);
+        res.status(200).json(captains);
+    }
+    catch (err) {
+        res.status(400).json({
+            message: "Captains not found"
+        });
+    }
+
+}

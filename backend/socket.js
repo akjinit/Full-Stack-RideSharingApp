@@ -33,21 +33,29 @@ const initializeSocket = (server) => {
 
                 if (captain) {
                     captain.socketId = socket.id;
+                    captain.captainState = 'active';
                     await captain.save();
                     console.log(`Captain ${userId} joined with socket ID: ${socket.id}`);
-
                 }
 
-                socket.on('watch-captain', ({ captainId,vehicle, latitude, longitude }) => {
-                    console.log(`captain watched `, { captainId,vehicle, latitude, longitude });
-                    io.to('users').emit('vehicle', { captainId,vehicle, latitude, longitude });
-                })
+                socket.on("disconnect", async () => {
+                    try {
+                        const captain = await captainModel.findById(userId);
+                        if (!captain) return;
+
+                        captain.captainState = 'inactive';
+                        await captain.save();
+
+                        console.log(`Captain ${userId} disconnected`);
+                    } catch (err) {
+                        console.error("Error on captain disconnect:", err);
+                    }
+                });
+
             }
         })
 
-        socket.on('disconnect', () => {
-            console.log('Client disconnected:', socket.id);
-        });
+
 
         socket.on('update-location-captain', async (data) => {
             const { captainId, latitude, longitude } = data;

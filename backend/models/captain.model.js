@@ -32,10 +32,16 @@ const captainSchema = new mongoose.Schema({
     default: null,
   },
 
-  status: {
+  captainState: {
     type: String,
-    enum: ["active", "inactive"],
+    enum: ["active", "inactive", 'riding'],
     default: "inactive",
+  },
+
+  rideId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'ride',
+    default : null
   },
 
   vehicle: {
@@ -70,11 +76,11 @@ const captainSchema = new mongoose.Schema({
       type: String,
       enum: ['Point'],
       default: 'Point',
-      required: true
     },
 
     coordinates: {
-      type: [Number]
+      type: [Number],
+      default : [0,0]
     }
   }
 });

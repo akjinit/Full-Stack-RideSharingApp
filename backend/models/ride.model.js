@@ -38,15 +38,7 @@ const rideSchema = new mongoose.Schema({
         enum: ['requested', 'accepted', 'in_progress', 'completed', 'cancelled'],
         default: 'requested'
     },
-    paymentId: {
-        type: String,
-    },
-    orderId: {
-        type: String,
-    },
-    signature: {
-        type: String,
-    },
+    
     OTP: {
         type: String,
         select: false,

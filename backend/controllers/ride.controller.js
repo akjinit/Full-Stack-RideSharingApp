@@ -69,7 +69,6 @@ module.exports.acceptRide = async (req, res, next) => {
 
     try {
         const ride = await rideService.acceptRide(rideId, req.captain._id);
-
         const userSocket = ride.userId?.socketId;
         sendMessageToSocketId(userSocket, 'ride-accepted', ride);
         return res.status(200).json(ride);

@@ -26,8 +26,8 @@ const leafLetIcons = {};
 for (const key in vehicleImageMap) {
   leafLetIcons[key] = L.icon({
     iconUrl: vehicleImageMap[key],
-    iconSize: key !== "location"? [50, 30] : [70,70],
-    iconAnchor: key !== "location"? [25, 15] : [35,35],
+    iconSize: key !== "location" ? [60, 40] : [70, 70],
+    iconAnchor: key !== "location" ? [30, 20] : [35, 35],
   })
 }
 
@@ -51,10 +51,11 @@ const Home = () => {
   const [location, setLocation] = useState({ lat: 22.961074, lng: 88.433524 });
   const [drivers, setDrivers] = useState([]);
   const navigate = useNavigate();
+  const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
+  const { user } = useContext(UserDataContext);
 
-        console.log(drivers);
 
-
+  console.log(drivers);
   const updateLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -70,10 +71,45 @@ const Home = () => {
     }
   }
 
+  const fetchNearbyDrivers = async (location) => {
+    try {
+      const captains = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/get-nearby-captains`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        params: {
+          lat: location.lat,
+          lng: location.lng
+        }
+      });
+      setDrivers(captains.data);
+    }
+    catch (err) {
+      console.log("Error fetching location:", err);
+    }
+  }
+
+  const createRide = async (vehicleType) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
+        origin: pickup,
+        destination,
+        vehicleType,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setRide(response.data);
+    }
+    catch (err) {
+      console.log("Error creating ride frontend:", err);
+    }
+  }
 
   const fetchSuggestions = async (query) => {
     try {
-      const response = await axios.get(`http://localhost:4000/maps/get-suggestions`, {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -106,46 +142,16 @@ const Home = () => {
     }
   }
 
-  const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
-  const { user } = useContext(UserDataContext);
 
 
-  useEffect(() => {
+
+  useEffect(() => {  //socket effects
     sendMessage('join', { userType: "user", userId: user._id });
     if (socket) {
       recieveMessage('ride-accepted', (ride) => {
         setlookingForDriverPanel(false);
         setWatingForDriver(true);
         setRide(ride);
-      });
-
-      recieveMessage('vehicle', ({ captainId, vehicle, latitude, longitude }) => {
-        console.log(`recieved vehicle`, { captainId, vehicle, latitude, longitude });
-
-        setDrivers((prev) => {
-          const existing = prev.find(d => d.captainId === captainId);
-
-          if (existing) {
-            // update location
-            return prev.map(d =>
-              d.captainId === captainId
-                ? { ...d, lat: latitude, lng: longitude, lastSeen: Date.now() }
-                : d
-            );
-          }
-
-          // new driver
-          return [
-            ...prev,
-            {
-              captainId,
-              vehicle,
-              lat: latitude,
-              lng: longitude,
-              lastSeen: Date.now()
-            }
-          ];
-        });
       });
 
       recieveMessage('ride-started', (ride) => {
@@ -163,6 +169,8 @@ const Home = () => {
 
   useEffect(() => {
     updateLocation();
+    fetchNearbyDrivers(location);
+
     const locationInterval = setInterval(() => {
       updateLocation();
     }, 10000);
@@ -172,38 +180,19 @@ const Home = () => {
 
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = Date.now();
+    const driverInterval = setInterval(() => {
+      if (user?.userState === 'riding') {
+        setDrivers([]);
+        return;
+      }
 
-      setDrivers((prev) =>
-        prev.filter(
-          (d) => now - d.lastSeen < 10 * 60 * 1000 // 10 minutes
-        )
-      );
-    }, 30 * 1000); // run cleanup every 30 seconds
+      fetchNearbyDrivers(location);
+    }, 20000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(driverInterval);
   }, []);
 
 
-
-  const createRide = async (vehicleType) => {
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
-        origin: pickup,
-        destination,
-        vehicleType,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setRide(response.data);
-    }
-    catch (err) {
-      console.log("Error creating ride frontend:", err);
-    }
-  }
 
   useEffect(() => {  //pickup recomendation
     if (!pickup) {
@@ -265,7 +254,9 @@ const Home = () => {
           </Marker>
 
 
-          {drivers.map((d) => (<Marker position={[d.lat, d.lng]} icon={leafLetIcons[d.vehicle]}></Marker>))}
+          {drivers.map((d) => {
+            return (<Marker key={d._id} position={[d.location.coordinates[1], d.location.coordinates[0]]} icon={leafLetIcons[d.vehicle.vehicleType]}></Marker>)
+          })}
 
           {/* captainId,
               vehicle,

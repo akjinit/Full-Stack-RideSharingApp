@@ -36,10 +36,6 @@ const CaptainHome = () => {
           lng: longitude
         })
 
-        if (captain.status != 'riding') {
-          sendMessage('watch-captain', { captainId: captain._id, vehicle: captain?.vehicle.vehicleType, latitude, longitude });
-          console.log(`watch-captain`, { captainId: captain._id, vehicle: captain?.vehicle.vehicleType, latitude, longitude });
-        }
         sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude });
       }, (err) => {
         console.error("Error getting location:", err);

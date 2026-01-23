@@ -1,4 +1,6 @@
+const captainModel = require("../models/captain.model");
 const rideModel = require("../models/ride.model");
+const userModel = require("../models/user.model");
 const mapService = require("../services/maps.service");
 
 module.exports.calculateFare = (distance, time, baseFare, perKmRate) => {
@@ -49,23 +51,47 @@ module.exports.getFareEstimate = async function (origin, destination) {
 
 module.exports.acceptRide = async (rideId, captainId) => {
     if (!rideId) {
-        throw new Error('Ride is Required');
+        throw new Error('Ride is required');
     }
 
-    const ride = await rideModel.findOneAndUpdate({
-        _id: rideId
-    }, {
-        status: 'accepted',
-        captainId
-    });
+    const ride = await rideModel.findOneAndUpdate(
+        { _id: rideId, status: 'requested' },
+        {
+            status: 'accepted',
+            captainId
+        },
+        { new: true }
+    );
 
-    const updatedRide = await rideModel.findById(rideId).populate('userId').populate('captainId').select('+OTP');
+    if (!ride) {
+        throw new Error('Ride already accepted');
+    }
+
+    await Promise.all([
+        userModel.findByIdAndUpdate(ride.userId, {
+            userState: 'riding',
+            rideId
+        }),
+
+        captainModel.findByIdAndUpdate(captainId, {
+            captainState: 'riding',
+            rideId
+        })
+    ]);
+
+    const updatedRide = await rideModel
+        .findById(rideId)
+        .populate('userId')
+        .populate('captainId')
+        .select('+OTP');
+
     if (!updatedRide) {
         throw new Error('Error in accepting ride');
     }
 
     return updatedRide;
-}
+};
+
 
 module.exports.startRide = async ({ rideId, OTP, captain }) => {
     if (!rideId || !OTP) {
@@ -99,7 +125,7 @@ module.exports.endRide = async ({ rideId, captain }) => {
         _id: rideId,
         captainId: captain._id
     }).populate('userId');
-    
+
     if (!ride) {
         throw new Error('Ride not ended');
     }
@@ -111,9 +137,9 @@ module.exports.endRide = async ({ rideId, captain }) => {
     await rideModel.findByIdAndUpdate(
         {
             _id: rideId
-        },{
-            status : 'completed'
-        }
+        }, {
+        status: 'completed'
+    }
     )
 
     return ride;

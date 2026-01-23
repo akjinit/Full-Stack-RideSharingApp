@@ -4,8 +4,8 @@ import { UserDataContext } from "../context/UserContext";
 import axios from "axios";
 
 const UserLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("akshatjha5787@gmail.com");
+  const [password, setPassword] = useState("57878787");
   const [userData, setUserData] = useState("{}");
 
   const navigate = useNavigate();
