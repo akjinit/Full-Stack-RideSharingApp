@@ -10,25 +10,32 @@ const UserProtectWrapper = ({ children }) => {
   const { user, setUser } = useContext(UserDataContext);
 
   useEffect(() => {
-    if (!token) navigate("/login");
-    axios
-      .get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.status == 200) {
-          setUser(res.data);
-          setIsLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const interval = setTimeout(async () => {
+      if (!token) navigate("/login");
+
+      else {
+        axios
+          .get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((res) => {
+            if (res.status == 200) {
+              setUser(res.data);
+              setIsLoading(false);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }, 5000);
+
+    return () => {
+      clearTimeout(interval);
+    };
   }, [token]);
-
-
 
   return <>{isLoading ? <div>Loading...</div> : children}</>;
 };

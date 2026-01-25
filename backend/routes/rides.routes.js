@@ -18,6 +18,17 @@ router.get("/fare-estimate",
     rideController.getFareEstimate
 );
 
+router.get('/ride-status/user',
+    authMiddleware.authUser,
+    query('rideId').isMongoId().withMessage('Invalid ride ID'),
+    rideController.getRideStatus
+);
+
+router.get('/ride-status/captain',
+    authMiddleware.authCaptain,
+    query('rideId').isMongoId().withMessage('Invalid ride ID'),
+    rideController.getRideStatus
+);
 
 router.post('/accept-ride',
     authMiddleware.authCaptain,

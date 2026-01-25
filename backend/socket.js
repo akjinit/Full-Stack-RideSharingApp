@@ -28,9 +28,7 @@ const initializeSocket = (server) => {
 
             } else if (userType === "captain") {
                 const captain = await captainModel.findById(userId);
-
                 socket.join('captains');
-
                 if (captain) {
                     captain.socketId = socket.id;
                     captain.captainState = 'active';
@@ -46,9 +44,9 @@ const initializeSocket = (server) => {
                         captain.captainState = 'inactive';
                         await captain.save();
 
-                        console.log(`Captain ${userId} disconnected`);
+                        console.log(`Captain ${userId} marketed as inactive on disconnect.`);
                     } catch (err) {
-                        console.error("Error on captain disconnect:", err);
+                        console.error("Error on captain disconnect: ", err);
                     }
                 });
 

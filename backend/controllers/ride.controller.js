@@ -3,8 +3,25 @@ const { validationResult } = require('express-validator');
 const mapService = require('../services/maps.service');
 const { sendMessageToSocketId } = require('../socket');
 const rideModel = require('../models/ride.model');
+const userModel = require('../models/user.model');
 
 
+module.exports.getRideStatus = async (req, res, next) => { 
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const { rideId } = req.query;
+    try {
+        const ride = await rideService.getRideById(rideId);
+        return res.status(200).json(ride);
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Could not fetch ride status"
+        });
+    }
+}
 
 
 module.exports.createRide = async (req, res, next) => {
@@ -17,6 +34,14 @@ module.exports.createRide = async (req, res, next) => {
     try {
         const ride = await rideService.createRide(userId, origin, destination, vehicleType);
         const ridePopulatedByUser = await rideModel.findById(ride._id).populate('userId', '-password -socketId -__v');
+        const user = await userModel.findById(userId);
+        user.userState = 'requested';
+        user.rideId = ride._id;
+        await user.save();
+        const populatedUser = await userModel.findById(userId).populate('rideId');
+        console.log("Populated User after ride creation: ", populatedUser);
+        await populatedUser.save();
+
         res.status(201).json(ridePopulatedByUser);
 
         const originCoord = await mapService.getAddressCoordinate(origin);

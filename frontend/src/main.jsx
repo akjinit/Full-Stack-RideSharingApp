@@ -9,17 +9,17 @@ import UserContext from "./context/UserContext.jsx";
 import CaptainContext from "./context/CaptainContext.jsx";
 import { SocketContext } from "./context/SocketContext.jsx";
 
-
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <SocketContext>
-      <UserContext>
-        <CaptainContext>
+  // <StrictMode>
+  <SocketContext>
+
+    <UserContext>
+      <CaptainContext>
           <BrowserRouter>
             <App />
           </BrowserRouter>
-        </CaptainContext>
-      </UserContext>
-    </SocketContext>
-  </StrictMode>
+      </CaptainContext>
+    </UserContext>
+  </SocketContext>
+  // </StrictMode>
 );

@@ -145,6 +145,16 @@ module.exports.endRide = async ({ rideId, captain }) => {
     return ride;
 }
 
+module.exports.getRideById = async (rideId) => {
+    const ride = await rideModel.findById(rideId)
+        .populate('captainId', '-password -socketId ')
+        .populate('userId', '-password -socketId ');
+    if (!ride) {
+        throw new Error('Ride not found');
+    }
+    return ride;
+}
+
 function OTPGenerator(num) {
     let otp = '';
     for (let i = 0; i < num; i++) {

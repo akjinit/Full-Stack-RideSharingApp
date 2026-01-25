@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  
+
   rideId: {
     type: mongoose.Schema.ObjectId,
     ref: 'ride',
@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
 
   userState: {
     type: String,
-    enum: ['active', 'inactive', 'riding'],
+    enum: ['active', 'inactive', 'riding', 'requested', 'waiting'],
     default: 'active',
     required: true
   }

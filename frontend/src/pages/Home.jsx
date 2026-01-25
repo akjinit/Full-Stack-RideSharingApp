@@ -47,15 +47,17 @@ const Home = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [fare, setFare] = useState({});
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [ride, setRide] = useState({});
   const [location, setLocation] = useState({ lat: 22.961074, lng: 88.433524 });
   const [drivers, setDrivers] = useState([]);
   const navigate = useNavigate();
   const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
-  const { user } = useContext(UserDataContext);
 
+  const { user } = useContext(UserDataContext);
+  const [ride, setRide] = useState(null);
 
   console.log(drivers);
+  console.log(ride);
+
   const updateLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -169,8 +171,6 @@ const Home = () => {
 
   useEffect(() => {
     updateLocation();
-    fetchNearbyDrivers(location);
-
     const locationInterval = setInterval(() => {
       updateLocation();
     }, 10000);
@@ -183,11 +183,24 @@ const Home = () => {
     const driverInterval = setInterval(() => {
       if (user?.userState === 'riding') {
         setDrivers([]);
-        return;
+        if (user && user.rideId) {
+          axios.get(`${import.meta.env.VITE_BASE_URL}/rides/ride-status/user`, {
+            params: {
+              rideId: user.rideId
+            },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }
+          }).then((response) => {
+            if (response.data) {
+              setRide(response.data);
+            }
+          });
+        }
       }
 
-      fetchNearbyDrivers(location);
-    }, 20000);
+      else fetchNearbyDrivers(location);
+    }, 10000);
 
     return () => clearInterval(driverInterval);
   }, []);
