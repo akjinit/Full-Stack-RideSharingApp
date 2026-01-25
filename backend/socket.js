@@ -7,7 +7,7 @@ let io = null;
 const initializeSocket = (server) => {
     io = new socketIo.Server(server, {
         cors: {
-            origin: process.env.VITE_URL,
+            origin: [process.env.VITE_URL, 'https://full-stack-ridesharingapp-client.onrender.com'],
             methods: ["GET", "POST"]
         }
     });
