@@ -26,7 +26,7 @@ router.post(
       .withMessage("Capacity between 2 - 20"),
     body("vehicle.vehicleType")
       .isIn(["car", "motorcycle", "auto"])
-      .withMessage("Plate must be of 3 characters"),
+      .withMessage("Invalid type"),
   ],
   captainController.registerCaptain
 );
