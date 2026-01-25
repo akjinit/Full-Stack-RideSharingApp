@@ -16,9 +16,12 @@ const LookingForDriver = (props) => {
       className={` ${lookingForDriverPanel ? "" : "translate-y-full"
         } w-full  fixed z-10 bottom-0 bg-white px-5 py-9 rounded-2xl transition`}
     >
-
+      <h3 className="text-2xl font-semibold mb-5">Finding Drivers</h3>
       {ride ? (
         <div className="flex flex-col justify-center gap-5">
+          <div className="flex justify-center mb-3">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-400"></div>
+          </div>
           <img src={vehicleImageMap[ride.vehicleType] || "car.png"} className="w-30 mt-4 m-auto" alt="" />
 
           <div>

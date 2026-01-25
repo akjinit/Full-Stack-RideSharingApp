@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserDataContext } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
 
 const UserProtectWrapper = ({ children }) => {
@@ -10,34 +10,36 @@ const UserProtectWrapper = ({ children }) => {
   const { user, setUser } = useContext(UserDataContext);
 
   useEffect(() => {
-    const interval = setTimeout(async () => {
-      if (!token) navigate("/login");
+    if (!token) {
+      return;
+    }
 
-      else {
-        axios
-          .get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .then((res) => {
-            if (res.status == 200) {
-              setUser(res.data);
-              setIsLoading(false);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+    axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    }, 5000);
+    }).then(response => {
+      if (response.status === 200) {
+        setUser(response.data)
+        setIsLoading(false)
+      }
+    })
+      .catch(err => {
+        console.log(err)
+        localStorage.removeItem('token')
+        navigate('/login')
+      })
+  }, [token])
 
-    return () => {
-      clearTimeout(interval);
-    };
-  }, [token]);
+  if (!token) {
+    return <Navigate to="/login" replace />
+  }
 
-  return <>{isLoading ? <div>Loading...</div> : children}</>;
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  return <>{children}</>;
 };
 
 export default UserProtectWrapper;

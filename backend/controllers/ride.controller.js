@@ -23,6 +23,30 @@ module.exports.getRideStatus = async (req, res, next) => {
     }
 }
 
+module.exports.getActiveRideForUser = async (req, res, next) => {
+    try {
+        const ride = await rideService.getActiveRideForUser(req.user._id);
+        return res.status(200).json(ride || null);
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Could not fetch active ride"
+        });
+    }
+}
+
+module.exports.getActiveRideForCaptain = async (req, res, next) => {
+    try {
+        const ride = await rideService.getActiveRideForCaptain(req.captain._id);
+        return res.status(200).json(ride || null);
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Could not fetch active ride"
+        });
+    }
+}
+
 
 module.exports.createRide = async (req, res, next) => {
     const errors = validationResult(req);
@@ -134,11 +158,128 @@ module.exports.endRide = async (req, res, next) => {
     const { rideId } = req.query;
 
     try {
-        const ride = await rideService.endRide({ rideId, captain: req.captain });
+        const ride = await rideService.endRideAndUpdateStats({ rideId, captain: req.captain });
         sendMessageToSocketId(ride.userId?.socketId, 'ride-ended', ride);
 
         return res.status(200).json(ride);
     } catch (err) {
         return res.status(500).json({ message: err.message });
+    }
+}
+
+module.exports.updateUserLocation = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { rideId, latitude, longitude } = req.body;
+
+    try {
+        const ride = await rideService.updateUserLocation(rideId, latitude, longitude, req.user._id);
+        return res.status(200).json(ride);
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Could not update user location"
+        });
+    }
+}
+
+module.exports.updateCaptainLocation = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { rideId, latitude, longitude } = req.body;
+
+    try {
+        const ride = await rideService.updateCaptainLocation(rideId, latitude, longitude, req.captain._id);
+        return res.status(200).json(ride);
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Could not update captain location"
+        });
+    }
+}
+
+module.exports.getCaptainStats = async (req, res, next) => {
+    try {
+        const captainModel = require('../models/captain.model');
+        const captain = await captainModel.findById(req.captain._id).select('stats');
+        
+        if (!captain) {
+            return res.status(404).json({ message: "Captain not found" });
+        }
+
+        return res.status(200).json(captain.stats);
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Could not fetch captain stats"
+        });
+    }
+}
+
+module.exports.getRideCoordinates = async (req, res, next) => {
+    try {
+        const { rideId } = req.params;
+        
+        if (!rideId) {
+            return res.status(400).json({ message: "Ride ID is required" });
+        }
+
+        const ride = await rideModel.findById(rideId);
+        
+        if (!ride) {
+            return res.status(404).json({ message: "Ride not found" });
+        }
+
+        // If coordinates already exist, return them
+        if (ride.originCoordinates && ride.destinationCoordinates) {
+            return res.status(200).json({
+                originLat: ride.originCoordinates.latitude,
+                originLng: ride.originCoordinates.longitude,
+                destLat: ride.destinationCoordinates.latitude,
+                destLng: ride.destinationCoordinates.longitude
+            });
+        }
+
+        // If not, fetch them from maps service and update the ride
+        try {
+            const originCoord = await mapService.getAddressCoordinate(ride.origin);
+            const destCoord = await mapService.getAddressCoordinate(ride.destination);
+
+            // Update ride with coordinates
+            await rideModel.findByIdAndUpdate(rideId, {
+                originCoordinates: {
+                    latitude: originCoord.latitude,
+                    longitude: originCoord.longitude
+                },
+                destinationCoordinates: {
+                    latitude: destCoord.latitude,
+                    longitude: destCoord.longitude
+                }
+            });
+
+            return res.status(200).json({
+                originLat: originCoord.latitude,
+                originLng: originCoord.longitude,
+                destLat: destCoord.latitude,
+                destLng: destCoord.longitude
+            });
+        } catch (err) {
+            return res.status(400).json({
+                error: err.message,
+                message: "Could not fetch coordinates from maps service"
+            });
+        }
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Could not fetch ride coordinates"
+        });
     }
 }

@@ -15,6 +15,9 @@ module.exports.createRide = async (userId, origin, destination, vehicleType) => 
     }
 
     const distanceTime = await mapService.getDistanceTime(origin, destination);
+    const originCoord = await mapService.getAddressCoordinate(origin);
+    const destinationCoord = await mapService.getAddressCoordinate(destination);
+
     const fare = {
         car: this.calculateFare(distanceTime.distance, distanceTime.duration, 30, 8),
         auto: this.calculateFare(distanceTime.distance, distanceTime.duration, 19, 5),
@@ -24,7 +27,15 @@ module.exports.createRide = async (userId, origin, destination, vehicleType) => 
     const ride = await rideModel.create({
         userId,
         origin: distanceTime.origin,
+        originCoordinates: {
+            latitude: originCoord.latitude,
+            longitude: originCoord.longitude
+        },
         destination: distanceTime.destination,
+        destinationCoordinates: {
+            latitude: destinationCoord.latitude,
+            longitude: destinationCoord.longitude
+        },
         fare: fare[vehicleType].toFixed(2),
         duration: distanceTime.duration,
         distance: distanceTime.distance,
@@ -148,10 +159,123 @@ module.exports.endRide = async ({ rideId, captain }) => {
 module.exports.getRideById = async (rideId) => {
     const ride = await rideModel.findById(rideId)
         .populate('captainId', '-password -socketId ')
-        .populate('userId', '-password -socketId ');
+        .populate('userId', '-password -socketId');
+
     if (!ride) {
         throw new Error('Ride not found');
     }
+
+    return ride;
+}
+
+module.exports.getActiveRideForUser = async (userId) => {
+    const ride = await rideModel.findOne({
+        userId,
+        status: { $in: ['requested', 'accepted', 'in_progress'] }
+    })
+        .populate('captainId', '-password -socketId')
+        .populate('userId', '-password -socketId')
+        .select('+OTP');
+
+    return ride;
+}
+
+module.exports.getActiveRideForCaptain = async (captainId) => {
+    const ride = await rideModel.findOne({
+        captainId,
+        status: { $in: ['accepted', 'in_progress'] }
+    })
+        .populate('captainId', '-password -socketId')
+        .populate('userId', '-password -socketId')
+        .select('+OTP');
+
+    return ride;
+}
+
+module.exports.updateUserLocation = async (rideId, latitude, longitude, userId) => {
+    if (!rideId || !latitude || !longitude || !userId) {
+        throw new Error('Ride ID, coordinates, and user ID are required');
+    }
+
+    const ride = await rideModel.findOneAndUpdate(
+        { _id: rideId, userId },
+        {
+            userLocation: {
+                type: 'Point',
+                coordinates: [longitude, latitude]
+            }
+        },
+        { new: true }
+    ).populate('userId', '-password -socketId').populate('captainId', '-password -socketId').select('+OTP');
+
+    if (!ride) {
+        throw new Error('Ride not found or unauthorized');
+    }
+
+    return ride;
+}
+
+module.exports.updateCaptainLocation = async (rideId, latitude, longitude, captainId) => {
+    if (!rideId || !latitude || !longitude || !captainId) {
+        throw new Error('Ride ID, coordinates, and captain ID are required');
+    }
+
+    const ride = await rideModel.findOneAndUpdate(
+        { _id: rideId, captainId },
+        {
+            captainLocation: {
+                type: 'Point',
+                coordinates: [longitude, latitude]
+            }
+        },
+        { new: true }
+    ).populate('userId', '-password -socketId').populate('captainId', '-password -socketId').select('+OTP');
+
+    if (!ride) {
+        throw new Error('Ride not found or unauthorized');
+    }
+
+    return ride;
+}
+
+module.exports.endRideAndUpdateStats = async ({ rideId, captain }) => {
+    if (!rideId) {
+        throw new Error('Ride id required');
+    }
+
+    const ride = await rideModel.findOne({
+        _id: rideId,
+        captainId: captain._id
+    }).populate('userId');
+
+    if (!ride) {
+        throw new Error('Ride not found');
+    }
+
+    if (ride.status !== 'in_progress') {
+        throw new Error('Ride not ongoing');
+    }
+
+    // Update ride status
+    ride.status = 'completed';
+    await ride.save();
+
+    // Update captain stats
+    const captainModel = require('../models/captain.model');
+    const distance = parseFloat(ride.distance) || 0;
+    const earnings = parseFloat(ride.fare) || 0;
+
+    await captainModel.findByIdAndUpdate(
+        captain._id,
+        {
+            $inc: {
+                'stats.totalRides': 1,
+                'stats.totalEarnings': earnings,
+                'stats.totalDistance': distance
+            }
+        }
+    );
+
     return ride;
 }
 

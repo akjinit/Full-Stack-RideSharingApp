@@ -18,6 +18,11 @@ const UserLogout = () => {
           localStorage.removeItem("token");
           navigate("/login");
         }
+      })
+      .catch((err) => {
+        console.log(err);
+        localStorage.removeItem("token");
+        navigate("/login");
       });
   }, []);
 

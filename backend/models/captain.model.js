@@ -82,6 +82,30 @@ const captainSchema = new mongoose.Schema({
       type: [Number],
       default : [0,0]
     }
+  },
+
+  // Captain statistics
+  stats: {
+    totalRides: {
+      type: Number,
+      default: 0
+    },
+    totalEarnings: {
+      type: Number,
+      default: 0
+    },
+    totalDistance: {
+      type: Number,
+      default: 0
+    },
+    hoursOnline: {
+      type: Number,
+      default: 0
+    },
+    lastOnlineTime: {
+      type: Date,
+      default: null
+    }
   }
 });
 

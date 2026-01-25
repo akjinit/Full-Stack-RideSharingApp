@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CaptainDetails from "../Components/CaptainDetails";
 import RidePopup from "../Components/RidePopup";
 import ConfirmRidePopup from "../Components/ConfirmRidePopup";
@@ -23,9 +23,30 @@ const CaptainHome = () => {
   const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
   const [ride, setRide] = useState(null);
   const { captain } = useContext(CaptainDataContext);
-  console.log(captain);
+  const navigate = useNavigate();
   const [location, setLocation] = useState({ lat: 22.961074, lng: 88.433524 });
+  const [captainDetailsPanelOpen, setCaptainDetailsPanelOpen] = useState(true);
 
+  const fetchActiveRide = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/active-ride/captain`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (response.data) {
+        setRide(response.data);
+        if (response.data.status === 'in_progress') {
+          navigate('/captain-riding', { state: { ride: response.data } });
+        } else {
+          setConfirmRidePopupPanel(true);
+        }
+      }
+    } catch (err) {
+      // No active ride found, which is normal
+      console.log("No active ride found");
+    }
+  }
 
   const updateLocation = () => {
     if (navigator.geolocation) {
@@ -36,7 +57,9 @@ const CaptainHome = () => {
           lng: longitude
         })
 
-        sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude });
+        if (captain?._id) {
+          sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude, rideId: ride?._id });
+        }
       }, (err) => {
         console.error("Error getting location:", err);
       });
@@ -65,7 +88,14 @@ const CaptainHome = () => {
   }
 
   useEffect(() => {
-    sendMessage('join', { userType: "captain", userId: captain._id });
+    // Check for active ride on mount
+    if (captain?._id) {
+      fetchActiveRide();
+      sendMessage('join', { userType: "captain", userId: captain._id });
+    }
+  }, [captain]);
+
+  useEffect(() => {
     if (socket) {
       recieveMessage('new-ride-request', (ride) => {
         console.log("New ride request received:", ride);
@@ -73,7 +103,7 @@ const CaptainHome = () => {
         setRidePopupPanel(true);
       });
     }
-  }, [socket, captain]);
+  }, [socket, recieveMessage]);
 
   useEffect(() => {
     updateLocation();
@@ -82,7 +112,7 @@ const CaptainHome = () => {
     }, 5000);
 
     return () => clearInterval(locationInterval);
-  }, []);
+  }, [ride]);
 
 
 
@@ -97,12 +127,8 @@ const CaptainHome = () => {
             alt=""
           />
 
-          <Link to="/home">
-            <img
-              src="logout-box.svg"
-              className=" w-9 bg-gray-100 rounded-full p-2"
-              alt=""
-            />
+          <Link to="/captain/logout" className="h-10 w-10 bg-white flex items-center justify-center rounded-full">
+            <i className="text-lg font-medium ri-logout-box-r-line"></i>
           </Link>
         </div>
         <div className="h-screen w-screen absolute z-0">
@@ -127,7 +153,15 @@ const CaptainHome = () => {
         </div>
       </div>
 
-      <div className="rider  h-2/5 p-6 rounded-2xl absolute bg-white">
+      <div className={`h-2/5 p-6 rounded-t-2xl fixed w-full z-10 bottom-0 bg-white transition-transform duration-500 ${captainDetailsPanelOpen ? 'translate-y-0' : 'translate-y-[80%]'}`}>
+
+        <div
+          onClick={() => setCaptainDetailsPanelOpen(!captainDetailsPanelOpen)}
+          className="absolute top-0 left-0 w-full flex justify-center py-2 cursor-pointer hover:bg-gray-100 rounded-t-2xl"
+        >
+          <i className={`text-3xl text-gray-400 ri-arrow-${captainDetailsPanelOpen ? 'down' : 'up'}-wide-line`}></i>
+        </div>
+
         <CaptainDetails />
       </div>
       <RidePopup ride={ride} acceptRideHandler={acceptRideHandler} setRidePopupPanel={setRidePopupPanel} ridePopupPanel={ridePopupPanel} />

@@ -14,9 +14,17 @@ const rideSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    originCoordinates: {
+        latitude: Number,
+        longitude: Number
+    },
     destination: {
         type: String,
         required: true
+    },
+    destinationCoordinates: {
+        latitude: Number,
+        longitude: Number
     },
     fare: {
         type: Number,
@@ -43,8 +51,33 @@ const rideSchema = new mongoose.Schema({
         type: String,
         select: false,
         required: true
+    },
+
+    // Location tracking
+    userLocation: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // [longitude, latitude]
+            default: [0, 0]
+        }
+    },
+
+    captainLocation: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // [longitude, latitude]
+            default: [0, 0]
+        }
     }
-})
+}, { timestamps: true })
 
 const rideModel = mongoose.model('ride', rideSchema);
 module.exports = rideModel;

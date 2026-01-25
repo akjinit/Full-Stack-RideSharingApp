@@ -24,10 +24,20 @@ router.get('/ride-status/user',
     rideController.getRideStatus
 );
 
+router.get('/active-ride/user',
+    authMiddleware.authUser,
+    rideController.getActiveRideForUser
+);
+
 router.get('/ride-status/captain',
     authMiddleware.authCaptain,
     query('rideId').isMongoId().withMessage('Invalid ride ID'),
     rideController.getRideStatus
+);
+
+router.get('/active-ride/captain',
+    authMiddleware.authCaptain,
+    rideController.getActiveRideForCaptain
 );
 
 router.post('/accept-ride',
@@ -49,7 +59,32 @@ router.get('/end-ride',
     authMiddleware.authCaptain,
     query('rideId').isMongoId().withMessage("Invalid Ride Id"),
     rideController.endRide
-)
+);
 
+router.post('/update-user-location',
+    authMiddleware.authUser,
+    body('rideId').isMongoId().withMessage('Invalid ride ID'),
+    body('latitude').isFloat().withMessage('Invalid latitude'),
+    body('longitude').isFloat().withMessage('Invalid longitude'),
+    rideController.updateUserLocation
+);
+
+router.post('/update-captain-location',
+    authMiddleware.authCaptain,
+    body('rideId').isMongoId().withMessage('Invalid ride ID'),
+    body('latitude').isFloat().withMessage('Invalid latitude'),
+    body('longitude').isFloat().withMessage('Invalid longitude'),
+    rideController.updateCaptainLocation
+);
+
+router.get('/captain-stats',
+    authMiddleware.authCaptain,
+    rideController.getCaptainStats
+);
+
+router.get('/ride-coordinates/:rideId',
+    authMiddleware.authUser,
+    rideController.getRideCoordinates
+);
 
 module.exports = router;

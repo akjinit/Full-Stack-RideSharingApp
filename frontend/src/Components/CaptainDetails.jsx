@@ -1,14 +1,39 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { CaptainDataContext } from '../context/CaptainContext'
 import { useContext } from 'react';
+import axios from 'axios';
 
 const CaptainDetails = () => {
   const { captain } = useContext(CaptainDataContext);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const vehicleImageMap = {
     car: "car.png",
     motorcycle: "motorbike.webp",
     auto: "auto.webp"
   };
+
+  useEffect(() => {
+    const fetchCaptainStats = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/captain-stats`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          }
+        });
+        setStats(response.data);
+      } catch (err) {
+        console.log("Error fetching captain stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (captain?._id) {
+      fetchCaptainStats();
+    }
+  }, [captain]);
 
   if (!captain || !captain.fullName) {
     return <div className="p-4">Loading captain details...</div>;
@@ -26,26 +51,26 @@ const CaptainDetails = () => {
         </div>
 
         <div className="text-right bg-white bg-opacity-60 rounded-lg px-3 py-2">
-          <h4 className="text-2xl font-bold text-yellow-700">₹295.2</h4>
-          <p className="text-xs text-gray-600 font-medium">Earned Today</p>
+          <h4 className="text-2xl font-bold text-yellow-700">₹{stats ? Math.round(stats.totalEarnings) : '0'}</h4>
+          <p className="text-xs text-gray-600 font-medium">Total Earnings</p>
         </div>
       </div>
 
       <div className="ride-details grid grid-cols-3 gap-3 p-5 bg-gray-200 rounded-2xl shadow-md">
         <div className="flex flex-col items-center bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow">
           <img src="time-line.svg" className="w-6 mb-2 opacity-80" alt="" />
-          <h5 className="text-xl font-bold text-gray-900">10.2</h5>
+          <h5 className="text-xl font-bold text-gray-900">{stats ? stats.hoursOnline.toFixed(1) : '0'}</h5>
           <p className="text-[10px] text-gray-600 font-medium text-center">Hours Online</p>
         </div>
         <div className="flex flex-col items-center bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow">
           <img src="pin-distance-line.svg" className="w-6 mb-2 opacity-80" alt="" />
-          <h5 className="text-xl font-bold text-gray-900">10.2</h5>
+          <h5 className="text-xl font-bold text-gray-900">{stats ? (stats.totalDistance / 1000).toFixed(1) : '0'} km</h5>
           <p className="text-[10px] text-gray-600 font-medium text-center">Distance Travelled</p>
         </div>
         <div className="flex flex-col items-center bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow">
           <img src="booklet-line.svg" className="w-6 mb-2 opacity-80" alt="" />
-          <h5 className="text-xl font-bold text-gray-900">300</h5>
-          <p className="text-[10px] text-gray-600 font-medium text-center">Average Earning</p>
+          <h5 className="text-xl font-bold text-gray-900">{stats ? stats.totalRides : '0'}</h5>
+          <p className="text-[10px] text-gray-600 font-medium text-center">Total Rides</p>
         </div>
       </div>
 

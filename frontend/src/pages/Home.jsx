@@ -8,7 +8,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { SocketDataContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from 'leaflet'
 
@@ -54,10 +54,8 @@ const Home = () => {
 
   const { user } = useContext(UserDataContext);
   const [ride, setRide] = useState(null);
-
-  console.log(drivers);
-  console.log(ride);
-
+  const [isLoading, setIsLoading] = useState(false);
+  console.log(user);
   const updateLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -66,10 +64,25 @@ const Home = () => {
           lat: latitude,
           lng: longitude
         })
-        // sendMessage('update-location-captain', { captainId: captain._id, latitude, longitude });
       }, (err) => {
         console.error("Error getting location:", err);
       });
+    }
+  }
+
+  const fetchActiveRide = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/active-ride/user`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (response.data) {
+        setRide(response.data);
+        console.log(response.data);
+      }
+    } catch (err) {
+      console.log("Error fetching active ride:", err.message);
     }
   }
 
@@ -144,11 +157,33 @@ const Home = () => {
     }
   }
 
+  // Initial load - check for active ride immediately
+  useEffect(() => {
+    if (user?._id) {
+      fetchActiveRide();
+      updateLocation();
+    }
+  }, [user]);
 
-
+  // Handle ride status display
+  useEffect(() => {
+    if (ride) {
+      if (ride.status === 'requested') {
+        setlookingForDriverPanel(true);
+        setWatingForDriver(false);
+      } else if (ride.status === 'accepted') {
+        setlookingForDriverPanel(false);
+        setWatingForDriver(true);
+      } else if (ride.status === 'in_progress') {
+        navigate('/riding');
+      }
+    }
+  }, [ride, navigate]);
 
   useEffect(() => {  //socket effects
-    sendMessage('join', { userType: "user", userId: user._id });
+    if (user?._id) {
+      sendMessage('join', { userType: "user", userId: user._id });
+    }
     if (socket) {
       recieveMessage('ride-accepted', (ride) => {
         setlookingForDriverPanel(false);
@@ -159,11 +194,7 @@ const Home = () => {
       recieveMessage('ride-started', (ride) => {
         setWatingForDriver(false);
 
-        navigate('/riding', {
-          state: {
-            ride
-          }
-        });
+        navigate('/riding');
       });
     }
   }, [socket, user]);   //all socket stuff
@@ -180,30 +211,15 @@ const Home = () => {
 
 
   useEffect(() => {
+    // Only poll nearby drivers if not actively riding
     const driverInterval = setInterval(() => {
-      if (user?.userState === 'riding') {
-        setDrivers([]);
-        if (user && user.rideId) {
-          axios.get(`${import.meta.env.VITE_BASE_URL}/rides/ride-status/user`, {
-            params: {
-              rideId: user.rideId
-            },
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            }
-          }).then((response) => {
-            if (response.data) {
-              setRide(response.data);
-            }
-          });
-        }
+      if (!ride || (ride && ride.status === 'requested')) {
+        fetchNearbyDrivers(location);
       }
-
-      else fetchNearbyDrivers(location);
     }, 10000);
 
     return () => clearInterval(driverInterval);
-  }, []);
+  }, [ride, location]);
 
 
 
@@ -244,10 +260,14 @@ const Home = () => {
   return (
     <div className="relative h-screen">
       <img
-        className="w-30 absolute "
+        className="w-30 absolute left-5 top-5"
         src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
         alt=""
       />
+
+      <Link to="/user/logout" className="fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full">
+        <i className="text-lg font-medium ri-logout-box-r-line"></i>
+      </Link>
 
       <div className="h-screen w-screen absolute z-0">
         {/* image for temp use */}
