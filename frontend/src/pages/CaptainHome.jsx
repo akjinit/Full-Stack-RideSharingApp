@@ -153,7 +153,7 @@ const CaptainHome = () => {
         </div>
       </div>
 
-      <div className={`h-2/5 p-6 rounded-t-2xl fixed w-full z-10 bottom-0 bg-white transition-transform duration-500 ${captainDetailsPanelOpen ? 'translate-y-0' : 'translate-y-[80%]'}`}>
+      <div className={`h-2/5 p-6 rounded-t-2xl fixed w-full z-10 bottom-0 bg-white transition-transform duration-500 overflow-y-scroll ${captainDetailsPanelOpen ? 'translate-y-0' : 'translate-y-[80%]'}`}>
 
         <div
           onClick={() => setCaptainDetailsPanelOpen(!captainDetailsPanelOpen)}

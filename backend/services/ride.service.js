@@ -263,6 +263,7 @@ module.exports.endRideAndUpdateStats = async ({ rideId, captain }) => {
     // Update captain stats
     const captainModel = require('../models/captain.model');
     const distance = parseFloat(ride.distance) || 0;
+    const duration = parseFloat(ride.duration) || 0;
     const earnings = parseFloat(ride.fare) || 0;
 
     await captainModel.findByIdAndUpdate(
@@ -271,7 +272,8 @@ module.exports.endRideAndUpdateStats = async ({ rideId, captain }) => {
             $inc: {
                 'stats.totalRides': 1,
                 'stats.totalEarnings': earnings,
-                'stats.totalDistance': distance
+                'stats.totalDistance': distance,
+                'stats.totalDuration': duration
             }
         }
     );

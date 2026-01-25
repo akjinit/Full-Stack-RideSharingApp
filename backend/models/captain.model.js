@@ -41,7 +41,7 @@ const captainSchema = new mongoose.Schema({
   rideId: {
     type: mongoose.Schema.ObjectId,
     ref: 'ride',
-    default : null
+    default: null
   },
 
   vehicle: {
@@ -80,7 +80,7 @@ const captainSchema = new mongoose.Schema({
 
     coordinates: {
       type: [Number],
-      default : [0,0]
+      default: [0, 0]
     }
   },
 
@@ -95,6 +95,10 @@ const captainSchema = new mongoose.Schema({
       default: 0
     },
     totalDistance: {
+      type: Number,
+      default: 0
+    },
+    totalDuration: {
       type: Number,
       default: 0
     },

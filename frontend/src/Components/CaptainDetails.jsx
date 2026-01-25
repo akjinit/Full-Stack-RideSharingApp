@@ -59,8 +59,8 @@ const CaptainDetails = () => {
       <div className="ride-details grid grid-cols-3 gap-3 p-5 bg-gray-200 rounded-2xl shadow-md">
         <div className="flex flex-col items-center bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow">
           <img src="time-line.svg" className="w-6 mb-2 opacity-80" alt="" />
-          <h5 className="text-xl font-bold text-gray-900">{stats ? stats.hoursOnline.toFixed(1) : '0'}</h5>
-          <p className="text-[10px] text-gray-600 font-medium text-center">Hours Online</p>
+          <h5 className="text-xl font-bold text-gray-900">{stats ? (stats.totalDuration / 3600).toFixed(1) : '0'}</h5>
+          <p className="text-xs text-gray-600 font-medium text-center">Total Hours</p>
         </div>
         <div className="flex flex-col items-center bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow">
           <img src="pin-distance-line.svg" className="w-6 mb-2 opacity-80" alt="" />
