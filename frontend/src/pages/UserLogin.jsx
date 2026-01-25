@@ -5,7 +5,7 @@ import axios from "axios";
 
 const UserLogin = () => {
   const [email, setEmail] = useState("akshatjha5787@gmail.com");
-  const [password, setPassword] = useState("57878787");
+  const [password, setPassword] = useState("7777777");
   const [userData, setUserData] = useState("{}");
 
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const UserLogin = () => {
     if (response.status === 200) {
       const data = response.data;
       setUser(data.user);
-      localStorage.setItem('token',data.token);
+      localStorage.setItem('token', data.token);
       navigate("/home");
     }
 
@@ -37,11 +37,7 @@ const UserLogin = () => {
   return (
     <div className="p-7 flex h-screen flex-col justify-between">
       <div>
-        <img
-          className="w-23 mb-7"
-          src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
-          alt=""
-        />
+        <h1 className="text-4xl font-bold mb-7 text-black">rideShare</h1>
         <form action="" onSubmit={submitHandler}>
           <h3
             className="

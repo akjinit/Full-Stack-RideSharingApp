@@ -36,7 +36,7 @@ const VehiclePanel = (props) => {
           <img src="car.png" className="w-21" alt="" />
           <div className=" w-1/2">
             <h4 className="flex items-center gap-1 font-semibold text-base">
-              Uber Go
+              RideShare Go
               <span>
                 <img className="w-3" src="user-line.svg" alt="" />
               </span>

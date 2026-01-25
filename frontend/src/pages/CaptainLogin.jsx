@@ -35,7 +35,7 @@ const CaptainLogin = () => {
   return (
     <div className="p-7 flex h-screen flex-col justify-between">
       <div>
-        <img className="w-23 mb-3" src="/uber_driver.svg" alt="" />
+        <h1 className="text-4xl font-bold mb-3 text-black">rideShare</h1>
         <form action="" onSubmit={submitHandler}>
           <h3 className="text-lg text-medium mb-2">
             What's our Captain's email

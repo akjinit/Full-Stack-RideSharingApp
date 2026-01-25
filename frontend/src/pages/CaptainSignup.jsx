@@ -12,7 +12,7 @@ const CaptainSignup = () => {
   const [vehiclePlate, setVehiclePlate] = useState("");
   const [vehicleCapacity, setVehicleCapacity] = useState("");
   const [vehicleType, setVehicleType] = useState("");
-  
+
   const { captain, setCaptain } = useContext(CaptainDataContext);
   const navigate = useNavigate();
 
@@ -58,7 +58,7 @@ const CaptainSignup = () => {
   return (
     <div className="p-7 flex h-screen flex-col justify-between">
       <div>
-        <img className="w-23 mb-3" src="/uber_driver.svg" alt="" />
+        <h1 className="text-4xl font-bold mb-3 text-black">rideShare</h1>
         <form action="" onSubmit={submitHandler}>
           <h3 className="text-lg text-medium mb-2">
             What's our Captain's name
@@ -178,10 +178,10 @@ const CaptainSignup = () => {
       </div>
 
       <p className="mt-10 text-[9px] pb-3 tracking-tight">
-        Join the millions of riders who trust Uber for their everyday travel
+        Join the millions of riders who trust rideShare for their everyday travel
         needs. Get doorstep pickup and dropoff to your chosen destination at the
         tap of a button. Select from a wide range of affordable options, such as
-        Uber Auto, Uber Moto, and Cabs.
+        rideShare Auto, rideShare Moto, and Cabs.
       </p>
     </div>
   );

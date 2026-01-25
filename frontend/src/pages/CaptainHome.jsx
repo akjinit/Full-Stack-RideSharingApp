@@ -121,11 +121,7 @@ const CaptainHome = () => {
     <div className="h-screen relative">
       <div className="h-3/5">
         <div className="w-full px-3 fixed flex items-center justify-between">
-          <img
-            className="w-30  "
-            src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
-            alt=""
-          />
+          <h2 className="text-2xl font-bold text-black pointer-events-none">rideShare</h2>
 
           <Link to="/captain/logout" className="h-10 w-10 bg-white flex items-center justify-center rounded-full">
             <i className="text-lg font-medium ri-logout-box-r-line"></i>

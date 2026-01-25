@@ -46,11 +46,7 @@ const UserSignup = () => {
   return (
     <div className="p-7 flex h-screen flex-col justify-between">
       <div>
-        <img
-          className="w-23 mb-7"
-          src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png"
-          alt=""
-        />
+        <h1 className="text-4xl font-bold mb-7 text-black">rideShare</h1>
         <form action="" onSubmit={submitHandler}>
           <h3 className="text-lg text-medium mb-2">What's your name</h3>
           <div className="flex name gap-4 mb-5">
@@ -115,7 +111,7 @@ const UserSignup = () => {
         Limited-period offer- Discount on first 5 trips (cab or moto) completed
         within 15 days of signing up. The offer is valid only for first-time
         users only. The promotion shall apply automatically to eligible rides.
-        Download the Uber app now to request your first ride. Discounts
+        Download the rideShare app now to request your first ride. Discounts
         applicable - (i) For cab rides- 25% discount (maximum discount of INR 75
         per ride) (ii) For moto rides- 50% discount (maximum discount of INR 50
         per ride)
