@@ -292,14 +292,12 @@ const Riding = () => {
 
         // Generate route if we have valid coordinates
         if (originLat && originLng && destLat && destLng) {
-          console.log("Generating route from", originLat, originLng, "to", destLat, destLng);
           const coordinates = await getOSRMRoute(
             originLat,
             originLng,
             destLat,
             destLng
           );
-          console.log("Route coordinates:", coordinates);
           setRouteCoordinates(coordinates);
         } else {
           console.log("Missing coordinates for route generation");

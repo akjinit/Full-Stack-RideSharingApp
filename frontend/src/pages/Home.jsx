@@ -230,7 +230,7 @@ const Home = () => {
 
     const timer = setTimeout(async () => {
       fetchSuggestions(pickup);
-    }, 500);
+    }, 300);
 
     return () => {
       clearTimeout(timer);
@@ -245,7 +245,7 @@ const Home = () => {
 
     const timer = setTimeout(async () => {
       fetchSuggestions(destination);
-    }, 500);
+    }, 300);
 
     return () => {
       clearTimeout(timer);
