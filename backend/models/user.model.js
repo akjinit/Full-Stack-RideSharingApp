@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
   userState: {
     type: String,
     enum: ['active', 'inactive', 'riding', 'requested', 'waiting'],
-    default: 'active',
+    default: 'inactive',
     required: true
   }
 });

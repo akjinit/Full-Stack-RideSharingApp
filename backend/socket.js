@@ -26,12 +26,25 @@ const initializeSocket = (server) => {
                     console.log(`User ${userId} joined with socket ID: ${socket.id}`);
                 }
 
+                socket.on("disconnect", async () => {
+                    try {
+                        const user = await userModel.findById(userId);
+                        if (!user) return;
+
+                        if (user.userState === 'active') user.userState = 'inactive';
+                        await user.save();
+
+                        console.log(`User ${userId} marketed as inactive on disconnect.`);
+                    } catch (err) {
+                        console.error("Error on user disconnect: ", err);
+                    }
+                });
+
             } else if (userType === "captain") {
                 const captain = await captainModel.findById(userId);
                 socket.join('captains');
                 if (captain) {
                     captain.socketId = socket.id;
-                    captain.captainState = 'active';
                     await captain.save();
                     console.log(`Captain ${userId} joined with socket ID: ${socket.id}`);
                 }
@@ -41,7 +54,7 @@ const initializeSocket = (server) => {
                         const captain = await captainModel.findById(userId);
                         if (!captain) return;
 
-                        captain.captainState = 'inactive';
+                        if (captain.captainState === 'active') captain.captainState = 'inactive';
                         await captain.save();
 
                         console.log(`Captain ${userId} marketed as inactive on disconnect.`);
