@@ -422,14 +422,14 @@ const Home = () => {
         createRide={createRide}
       />
 
-      <WaitingForDriver
-        waitingForDriver={waitingForDriver}
-        ride={ride}
-      />
       <LookingForDriver
         lookingForDriverPanel={lookingForDriverPanel}
         ride={ride}
         cancelRide={cancelRide}
+      />
+      <WaitingForDriver
+        waitingForDriver={waitingForDriver}
+        ride={ride}
       />
     </div>
   );
