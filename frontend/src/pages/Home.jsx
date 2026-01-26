@@ -315,8 +315,8 @@ const Home = () => {
 
       </div>
 
-      <div className=" flex  flex-col justify-end h-screen bottom-0 absolute w-full">
-        <div className=" min-h-[20%] p-4 bg-white relative rounded-t-2xl">
+      <div className=" flex  flex-col justify-end h-screen bottom-0 absolute w-full pointer-events-none">
+        <div className=" min-h-[20%] p-4 bg-white relative rounded-t-2xl pointer-events-auto">
           <img
             onClick={() => {
               setpickupPanelClose(true);
