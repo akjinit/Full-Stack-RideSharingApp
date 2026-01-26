@@ -267,7 +267,7 @@ module.exports.updateCaptainLocation = async (rideId, latitude, longitude, capta
     if (!rideId || !latitude || !longitude || !captainId) {
         throw new Error('Ride ID, coordinates, and captain ID are required');
     }
-
+    console.log(rideId, latitude, longitude, captainId);
     const ride = await rideModel.findOneAndUpdate(
         { _id: rideId, captainId },
         {
