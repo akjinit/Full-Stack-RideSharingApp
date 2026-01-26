@@ -109,7 +109,8 @@ module.exports.getCaptainsInTheRadius = async (latitude, longitude, radius) => {
                 ]
             }
         },
-        captainState : 'active'
+        captainState: 'active',
+        rideId: null
     });
 
     return captains;

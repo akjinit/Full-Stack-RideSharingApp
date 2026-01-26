@@ -106,12 +106,10 @@ module.exports.acceptRide = async (rideId, captainId) => {
 
     await Promise.all([
         userModel.findByIdAndUpdate(ride.userId, {
-            userState: 'riding',
             rideId
         }),
 
         captainModel.findByIdAndUpdate(captainId, {
-            captainState: 'riding',
             rideId
         })
     ]);
@@ -149,6 +147,15 @@ module.exports.startRide = async ({ rideId, OTP, captain }) => {
     ride.status = 'in_progress'
     await ride.save();
 
+    await Promise.all([
+        userModel.findByIdAndUpdate(ride.userId, {
+            userState: 'riding'
+        }),
+        captainModel.findByIdAndUpdate(ride.captainId, {
+            captainState: 'riding'
+        })
+    ])
+
     return ride;
 }
 
@@ -177,7 +184,22 @@ module.exports.endRide = async ({ rideId, captain }) => {
         }, {
         status: 'completed'
     }
-    )
+    );
+
+    // Reset user and captain states
+    const populatedRide = await rideModel.findById(rideId).populate('userId').populate('captainId');
+    if (populatedRide.userId) {
+        await userModel.findByIdAndUpdate(populatedRide.userId._id, {
+            userState: 'active',
+            rideId: null
+        });
+    }
+    if (populatedRide.captainId) {
+        await captainModel.findByIdAndUpdate(populatedRide.captainId._id, {
+            captainState: 'active',
+            rideId: null
+        });
+    }
 
     return ride;
 }
@@ -285,6 +307,21 @@ module.exports.endRideAndUpdateStats = async ({ rideId, captain }) => {
     // Update ride status
     ride.status = 'completed';
     await ride.save();
+
+    // Reset user and captain states
+    await userModel.findByIdAndUpdate(ride.userId._id, {
+        userState: 'active',
+        rideId: null
+    });
+
+    // We already have captain object, so we can use its ID directly
+    // But captain object passed might be the one from req.captain which is a document, or plain object.
+    // The query used captain._id so it should be available.
+    // However, we want to update the DB document.
+    await captainModel.findByIdAndUpdate(captain._id, {
+        captainState: 'active',
+        rideId: null
+    });
 
     // Update captain stats
     const captainModel = require('../models/captain.model');
