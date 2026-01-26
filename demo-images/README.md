@@ -9,38 +9,38 @@ Experience a seamless booking process with intuitive maps and search.
 
 *   **Dynamic Search Location**: Smart address autocomplete and location selection.
     
-    ![Dynamic Search](./dynamic-search.png)
+    <img src="./dynamic-search.png" width="300" alt="Dynamic Search" />
 
 *   **Nearby Drivers**: See available drivers in your vicinity in real-time.
     
-    ![Nearby Drivers](./nearby-drivers-icon.jpg)
+    <img src="./nearby-drivers-icon.jpg" width="300" alt="Nearby Drivers" />
 
 *   **Dynamic Fares**: Get instant fare estimates for different ride options (motorcycle, auto, cab).
     
-    ![Dynamic Fares](./dynamic-fares.png)
+    <img src="./dynamic-fares.png" width="300" alt="Dynamic Fares" />
 
 *   **Confirm Ride**: detailed review of your trip before booking.
     
-    ![Confirm Ride](./confirm-ride.png)
+    <img src="./confirm-ride.png" width="300" alt="Confirm Ride" />
 
 ### 2. Connecting with a Driver
 State-of-the-art matching system interactions.
 
 *   **Looking for Driver**: The system broadcasts your request to nearby captains.
     
-    ![Looking for Driver](./looking-for-driver.png)
-    ![Finding Drivers Page](./finding-drivers-page.jpg)
+    <img src="./looking-for-driver.png" width="300" alt="Looking for Driver" />
+    <img src="./finding-drivers-page.jpg" width="300" alt="Finding Drivers Page" />
 
 *   **Waiting for Driver**: Track your assigned driver as they approach your pickup location.
     
-    ![Waiting for Driver](./waiting-for-driver.png)
+    <img src="./waiting-for-driver.png" width="300" alt="Waiting for Driver" />
 
 ### 3. On The Move
 Real-time updates during your journey.
 
 *   **Ride Ongoing**: Live tracking of your trip progress.
     
-    ![Ride Ongoing](./ride-for-user-ongoing.jpg)
+    <img src="./ride-for-user-ongoing.jpg" width="300" alt="Ride Ongoing" />
 
 ---
 
@@ -51,26 +51,26 @@ Efficient tools for drivers to accept and manage rides.
 
 *   **New Ride Available**: Instant pop-up notifications for new ride requests with pickup details.
     
-    ![New Ride Available](./new-ride-available.png)
+    <img src="./new-ride-available.png" width="300" alt="New Ride Available" />
 
 ### 2. Trip Execution
 Secure and guided trip management.
 
 *   **OTP Verification**: Secure start-code system to ensure the right passenger is picked up.
     
-    ![OTP Verification](./otp-verification.png)
+    <img src="./otp-verification.png" width="300" alt="OTP Verification" />
 
 *   **Ride Ongoing**: Driver-side navigation and trip status.
     
-    ![Driver Ride Ongoing](./driver-ride-ongoing.png)
+    <img src="./driver-ride-ongoing.png" width="300" alt="Driver Ride Ongoing" />
 
 ### 3. Completion & Earnings
 Tools to manage business and performance.
 
 *   **Finish Ride**: Simple workflow to complete the trip and process payment.
     
-    ![Finish Ride Page](./finish-ride-page.png)
+    <img src="./finish-ride-page.png" width="300" alt="Finish Ride Page" />
 
-*   **Driver Earnings**: Comprehensive dashboard for tracking daily and weekly revenue.
+*   **Driver Earnings**: Comprehensive dashboard for tracking revenue.
     
-    ![Driver Earnings](./driver's-earning.png)
+    <img src="./driver's-earning.png" width="300" alt="Driver Earnings" />
