@@ -124,8 +124,6 @@ Drawing the route on the map involves:
 
 ## 🔌 API Documentation
 
-### Base URL: `http://localhost:4000`
-
 ### User Routes (`/users`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
