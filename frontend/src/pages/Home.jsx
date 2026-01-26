@@ -104,6 +104,7 @@ const Home = () => {
           lng: location.lng
         }
       });
+      console.log(captains.data); 
       setDrivers(captains.data);
     }
     catch (err) {
