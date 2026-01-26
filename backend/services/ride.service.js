@@ -324,7 +324,7 @@ module.exports.endRideAndUpdateStats = async ({ rideId, captain }) => {
     });
 
     // Update captain stats
-    const captainModel = require('../models/captain.model');
+    // Update captain stats
     const distance = parseFloat(ride.distance) || 0;
     const duration = parseFloat(ride.duration) || 0;
     const earnings = parseFloat(ride.fare) || 0;
