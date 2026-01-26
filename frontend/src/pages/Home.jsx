@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { SocketDataContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate, Link } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from 'leaflet'
 
 
@@ -31,6 +31,14 @@ for (const key in vehicleImageMap) {
   })
 }
 
+
+const UpdateMapComponent = ({ location }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo([location.lat, location.lng], map.getZoom());
+  }, [location]);
+  return null;
+}
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -310,6 +318,7 @@ const Home = () => {
               lng: longitude,
               lastSeen: Date.now() */}
 
+          <UpdateMapComponent location={location} />
         </MapContainer>
 
 
