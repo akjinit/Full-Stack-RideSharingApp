@@ -112,6 +112,7 @@ const Home = () => {
     }
   }
 
+  console.log(drivers);
   const createRide = async (vehicleType) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
