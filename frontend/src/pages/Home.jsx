@@ -139,6 +139,23 @@ const Home = () => {
     }
   }
 
+  const cancelRide = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/cancel`, {
+        rideId: ride._id
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
+      setRide(null)
+      setlookingForDriverPanel(false)
+      setWatingForDriver(false)
+    } catch (error) {
+      console.log("Error cancelling ride", error)
+    }
+  }
+
   const fetchFareEstimate = async (origin, destination) => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/fare-estimate`, {
@@ -402,6 +419,7 @@ const Home = () => {
       <LookingForDriver
         lookingForDriverPanel={lookingForDriverPanel}
         ride={ride}
+        cancelRide={cancelRide}
       />
     </div>
   );

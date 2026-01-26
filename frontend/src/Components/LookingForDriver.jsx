@@ -10,7 +10,7 @@ const LookingForDriver = (props) => {
     auto: "auto.webp"
   };
 
- 
+
   return (
     <div
       className={` ${lookingForDriverPanel ? "" : "translate-y-full"
@@ -50,6 +50,13 @@ const LookingForDriver = (props) => {
                 <h3 className="text-black font-medium text-medium">{(ride.distance / 1000).toFixed(2) + " kilometers"}</h3>
               </div>
             </div>
+            <button
+              onClick={() => {
+                props.cancelRide()
+              }}
+              className='w-full mt-5 bg-red-600 text-white font-semibold p-2 rounded-lg'>
+              Cancel Ride
+            </button>
           </div>
         </div>) : (<div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>

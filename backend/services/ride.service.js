@@ -46,6 +46,32 @@ module.exports.createRide = async (userId, origin, destination, vehicleType) => 
     return ride;
 }
 
+module.exports.cancelRide = async (rideId) => {
+    if (!rideId) {
+        throw new Error('Ride id is required');
+    }
+
+    const ride = await rideModel.findById(rideId);
+
+    if (!ride) {
+        throw new Error('Ride not found');
+    }
+
+    if (ride.status === 'completed' || ride.status === 'cancelled') {
+        throw new Error('Ride already completed or cancelled');
+    }
+
+    if (ride.status === 'in_progress') {
+        throw new Error('Cannot cancel ongoing ride');
+    }
+
+    await rideModel.findByIdAndUpdate(rideId, {
+        status: 'cancelled'
+    });
+
+    return ride;
+}
+
 module.exports.getFareEstimate = async function (origin, destination) {
     const distanceTime = await mapService.getDistanceTime(origin, destination);
     const fare = {

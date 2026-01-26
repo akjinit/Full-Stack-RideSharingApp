@@ -6,7 +6,7 @@ const rideModel = require('../models/ride.model');
 const userModel = require('../models/user.model');
 
 
-module.exports.getRideStatus = async (req, res, next) => { 
+module.exports.getRideStatus = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -209,7 +209,7 @@ module.exports.getCaptainStats = async (req, res, next) => {
     try {
         const captainModel = require('../models/captain.model');
         const captain = await captainModel.findById(req.captain._id).select('stats');
-        
+
         if (!captain) {
             return res.status(404).json({ message: "Captain not found" });
         }
@@ -226,13 +226,13 @@ module.exports.getCaptainStats = async (req, res, next) => {
 module.exports.getRideCoordinates = async (req, res, next) => {
     try {
         const { rideId } = req.params;
-        
+
         if (!rideId) {
             return res.status(400).json({ message: "Ride ID is required" });
         }
 
         const ride = await rideModel.findById(rideId);
-        
+
         if (!ride) {
             return res.status(404).json({ message: "Ride not found" });
         }
@@ -280,6 +280,30 @@ module.exports.getRideCoordinates = async (req, res, next) => {
         return res.status(400).json({
             error: err.message,
             message: "Could not fetch ride coordinates"
+        });
+    }
+}
+
+module.exports.cancelRide = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { rideId } = req.body;
+
+    try {
+        const ride = await rideService.cancelRide(rideId);
+        const user = await userModel.findById(req.user._id);
+        user.userState = 'active';
+        user.rideId = null;
+        await user.save();
+
+        return res.status(200).json(ride);
+    } catch (err) {
+        return res.status(400).json({
+            error: err.message,
+            message: "Ride could not be cancelled"
         });
     }
 }

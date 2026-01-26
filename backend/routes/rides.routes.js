@@ -87,4 +87,10 @@ router.get('/ride-coordinates/:rideId',
     rideController.getRideCoordinates
 );
 
+router.post('/cancel',
+    authMiddleware.authUser,
+    body('rideId').isMongoId().withMessage('Invalid ride ID'),
+    rideController.cancelRide
+);
+
 module.exports = router;
