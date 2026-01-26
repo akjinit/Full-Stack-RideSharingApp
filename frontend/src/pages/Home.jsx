@@ -35,7 +35,7 @@ for (const key in vehicleImageMap) {
 const UpdateMapComponent = ({ location }) => {
   const map = useMap();
   useEffect(() => {
-    map.flyTo([location.lat, location.lng], 18);
+    map.flyTo([location.lat, location.lng], 15);
   }, [location]);
   return null;
 }
