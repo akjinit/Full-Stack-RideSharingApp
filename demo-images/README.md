@@ -1,195 +1,76 @@
-# 🚖 Real-Time Ride Booking System 
+# RideShare Application Features Demo
 
-A **full-stack, real-time ride booking platform** inspired by Uber, built with **secure authentication**, **Socket.IO–based real-time communication**, **MongoDB geospatial queries**, and **OTP-based ride verification**.
+Welcome to the visual walkthrough of the RideShare application. This folder contains screenshots demonstrating the comprehensive flow for both Users (Riders) and Captains (Drivers), highlighting key features from booking to interaction and payment.
 
-This project demonstrates **production-grade system design**, not just CRUD APIs.
+## 📱 User (Rider) Flow
 
----
+### 1. Discovery & Booking
+Experience a seamless booking process with intuitive maps and search.
 
-## 📌 Key Highlights
+*   **Dynamic Search Location**: Smart address autocomplete and location selection.
+    
+    ![Dynamic Search](./dynamic-search.png)
 
-- 🔐 Heavy authentication & authorization (JWT + roles)
-- 🔄 Real-time ride lifecycle using Socket.IO
-- 🌍 Geospatial captain discovery (MongoDB)
-- 🔑 OTP-based secure ride start
-- 👥 Separate User and Captain (Driver) flows
-- 📱 Realistic UI showing all ride states
-- 🚀 Live tracking feature planned next
+*   **Nearby Drivers**: See available drivers in your vicinity in real-time.
+    
+    ![Nearby Drivers](./nearby-drivers-icon.jpg)
 
----
+*   **Dynamic Fares**: Get instant fare estimates for different ride options (motorcycle, auto, cab).
+    
+    ![Dynamic Fares](./dynamic-fares.png)
 
-## 🧠 Project Overview
+*   **Confirm Ride**: detailed review of your trip before booking.
+    
+    ![Confirm Ride](./confirm-ride.png)
 
-The system simulates a real-world cab booking platform where:
+### 2. Connecting with a Driver
+State-of-the-art matching system interactions.
 
-- Users can request rides
-- Nearby captains receive ride requests in real time
-- Captains accept./reject rides
-- Ride starts only after OTP verification
-- Ride state updates are synced instantly between user & captain
+*   **Looking for Driver**: The system broadcasts your request to nearby captains.
+    
+    ![Looking for Driver](./looking-for-driver.png)
+    ![Finding Drivers Page](./finding-drivers-page.jpg)
 
----
+*   **Waiting for Driver**: Track your assigned driver as they approach your pickup location.
+    
+    ![Waiting for Driver](./waiting-for-driver.png)
 
-## 📸 Screenshots (Complete Ride Flow)
+### 3. On The Move
+Real-time updates during your journey.
 
-### 👤 User Flow
-
-#### Confirm Ride
-![Confirm Ride](./confirm-ride.png)
-
-#### Looking for a Driver
-![Looking for Driver](./looking-for-driver.png)
-
-#### Waiting for Driver
-![Waiting for Driver](./waiting-for-driver.png)
-
----
-
-### 🧑‍✈️ Captain Flow
-
-#### New Ride Available
-![New Ride Available](./new-ride-available.png)
-
-#### OTP Verification
-![OTP Verification](./otp-verification.png)
+*   **Ride Ongoing**: Live tracking of your trip progress.
+    
+    ![Ride Ongoing](./ride-for-user-ongoing.jpg)
 
 ---
 
-### 🚗 Ride Lifecycle
+## 🚗 Captain (Driver) Flow
 
-#### Ride Ongoing
-![Ride Ongoing](./ride-ongoing.png)
+### 1. Managing Requests
+Efficient tools for drivers to accept and manage rides.
 
-#### Ride Ongoing (User View)
-![Ride Ongoing User](./ride-for-user-ongoing.png)
+*   **New Ride Available**: Instant pop-up notifications for new ride requests with pickup details.
+    
+    ![New Ride Available](./new-ride-available.png)
 
-#### Finish Ride
-![Finish Ride](./finish-ride.png)
+### 2. Trip Execution
+Secure and guided trip management.
 
----
+*   **OTP Verification**: Secure start-code system to ensure the right passenger is picked up.
+    
+    ![OTP Verification](./otp-verification.png)
 
-### 💰 Dynamic Features
+*   **Ride Ongoing**: Driver-side navigation and trip status.
+    
+    ![Driver Ride Ongoing](./driver-ride-ongoing.png)
 
-#### Dynamic Fare Calculation
-![Dynamic Fares](./dynamic-fares.png)
+### 3. Completion & Earnings
+Tools to manage business and performance.
 
-#### Dynamic Location Search
-![Dynamic Search](./dynamic-search.png)
+*   **Finish Ride**: Simple workflow to complete the trip and process payment.
+    
+    ![Finish Ride Page](./finish-ride-page.png)
 
----
-
-## 🔐 Authentication & Authorization
-
-### Security Features Implemented
-
-- JWT-based authentication
-- Role-based authorization (User ./ Captain)
-- Protected routes using middleware
-- Token validation on:
-  - Ride creation
-  - Ride acceptance
-  - Ride start
-  - Ride completion
-
-This prevents unauthorized access, ride spoofing, and state manipulation.
-
----
-
-## 🔄 Real-Time Communication (Socket.IO)
-
-Socket.IO acts as the **real-time backbone** of the system.
-
-### Socket Events
-
-| Event | Description |
-|------|------------|
-| `join` | User./Captain joins socket room |
-| `ride-created` | Notifies nearby captains |
-| `ride-accepted` | Locks ride to one captain |
-| `ride-started` | Ride begins after OTP verification |
-| `ride-completed` | Syncs ride completion |
-
-### Architecture Pattern
-- Pub-Sub using socket rooms:
-  - `user:<userId>`
-  - `captain:<captainId>`
-
----
-
-## 🌍 Geospatial Queries (MongoDB)
-
-- MongoDB geospatial indexing
-- Captains stored with live coordinates
-- Nearby captains fetched using location-based queries
-
-This ensures scalability and realistic ride allocation.
-
----
-
-## 🔑 OTP-Based Ride Start
-
-- OTP generated server-side
-- Ride cannot start without OTP verification
-- OTP validated before transitioning ride to ONGOING
-
-This adds a production-level security layer.
-
----
-
-## 🚦 Ride State Flow
-IDLE
-→ RIDE_REQUESTED
-→ DRIVER_ASSIGNED
-→ OTP_VERIFIED
-→ RIDE_ONGOING
-→ RIDE_COMPLETED
-
-
-Each transition is validated on the backend and synced in real time.
-
----
-
-## 👤 User Features
-
-- Create ride
-- View fare and distance
-- Receive live updates:
-  - Driver assigned
-  - Ride started
-  - Ride completed
-- OTP-based safety verification
-
----
-
-## 🧑‍✈️ Captain Features
-
-- Receive nearby ride requests
-- Accept ./ Reject rides
-- View pickup, drop, distance, and fare
-- Start ride only after OTP
-- Complete ride securely
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-- React
-- Context API
-- Tailwind CSS
-
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-
-### Real-Time
-- Socket.IO
-
-### Security
-- JWT
-- Middleware-based route protection
-- OTP verification
-
----
+*   **Driver Earnings**: Comprehensive dashboard for tracking daily and weekly revenue.
+    
+    ![Driver Earnings](./driver's-earning.png)
