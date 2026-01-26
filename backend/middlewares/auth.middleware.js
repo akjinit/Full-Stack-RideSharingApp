@@ -22,10 +22,10 @@ module.exports.authUser = async function (req, res, next) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     req.user = user;
-    if(user.userState === 'inactive') {
-      user.userState = 'active';
-      await user.save();  
-    }
+    // if(user.userState === 'inactive') {
+    //   user.userState = 'active';
+    //   await user.save();  
+    // }
     return next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid Token" });
@@ -52,11 +52,11 @@ module.exports.authCaptain = async function (req, res, next) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     req.captain = captain;
-    
-    if(captain.captainState === 'inactive') {
-      captain.captainState = 'active';
-      await captain.save();  
-    }
+
+    // if (captain.captainState === 'inactive') {
+    //   captain.captainState = 'active';
+    //   await captain.save();
+    // }
 
     return next();
   } catch (err) {
