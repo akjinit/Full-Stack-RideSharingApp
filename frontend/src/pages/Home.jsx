@@ -104,7 +104,7 @@ const Home = () => {
           lng: location.lng
         }
       });
-      console.log(captains.data); 
+      console.log(captains.data);
       setDrivers(captains.data);
     }
     catch (err) {
@@ -381,7 +381,7 @@ const Home = () => {
             />
           </form>
         </div>
-        <div className={`bg-white h-[70%] flex flex-col ${pickupPanelOpen ? "hidden" : ""}`}>
+        <div className={`bg-white h-[70%] flex flex-col pointer-events-auto ${pickupPanelOpen ? "hidden" : ""}`}>
           <button className="  bg-black p-2 mx-3.5 rounded-md mb-2 text-white font-semibold" onClick={async () => {
             const fareDetails = await fetchFareEstimate(pickup, destination);
             setFare(fareDetails);
