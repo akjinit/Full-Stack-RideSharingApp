@@ -28,7 +28,6 @@ State-of-the-art matching system interactions.
 
 *   **Looking for Driver**: The system broadcasts your request to nearby captains.
     
-    <img src="./looking-for-driver.png" width="300" alt="Looking for Driver" />
     <img src="./finding-drivers-page.jpg" width="300" alt="Finding Drivers Page" />
 
 *   **Waiting for Driver**: Track your assigned driver as they approach your pickup location.
