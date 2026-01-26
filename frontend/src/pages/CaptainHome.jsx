@@ -93,7 +93,7 @@ const CaptainHome = () => {
       fetchActiveRide();
       sendMessage('join', { userType: "captain", userId: captain._id });
     }
-  }, [captain]);
+  }, [captain,socket]);
 
   useEffect(() => {
     if (socket) {
