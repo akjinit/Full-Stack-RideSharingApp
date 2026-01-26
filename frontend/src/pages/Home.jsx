@@ -242,7 +242,7 @@ const Home = () => {
       if (!ride || (ride && ride.status === 'requested')) {
         fetchNearbyDrivers(location);
       }
-    }, 10000);
+    }, 9000);
 
     return () => clearInterval(driverInterval);
   }, [ride, location]);
