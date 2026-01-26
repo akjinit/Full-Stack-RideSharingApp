@@ -1,6 +1,7 @@
 const socketIo = require('socket.io');
 const userModel = require('./models/user.model');
 const captainModel = require('./models/captain.model');
+const rideModel = require('./models/ride.model');
 
 let io = null;
 
@@ -22,7 +23,7 @@ const initializeSocket = (server) => {
                 socket.join('users');
                 if (user) {
                     user.socketId = socket.id;
-                    if(user.userState === 'inactive') user.userState = 'active';
+                    if (user.userState === 'inactive') user.userState = 'active';
                     await user.save();
                     console.log(`User ${userId} joined with socket ID: ${socket.id}`);
                 }
@@ -46,7 +47,16 @@ const initializeSocket = (server) => {
                 socket.join('captains');
                 if (captain) {
                     captain.socketId = socket.id;
-                    if(captain.captainState === 'inactive') captain.captainState = 'active';
+                    if (captain.captainState === 'inactive') captain.captainState = 'active';
+
+                    if (captain.rideId) {
+                        const ride = await rideModel.findById(captain.rideId);
+                        if (!ride || ride.status === 'completed' || ride.status === 'cancelled') {
+                            captain.rideId = null;
+                            captain.captainState = 'active';
+                        }
+                    }
+
                     await captain.save();
                     console.log(`Captain ${userId} joined with socket ID: ${socket.id}`);
                 }
