@@ -63,7 +63,6 @@ const Home = () => {
   const { user } = useContext(UserDataContext);
   const [ride, setRide] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  console.log(user);
   const updateLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -185,8 +184,8 @@ const Home = () => {
   // Initial load - check for active ride immediately
   useEffect(() => {
     if (user?._id) {
-      fetchActiveRide();
       updateLocation();
+      fetchActiveRide();
     }
   }, [user]);
 
