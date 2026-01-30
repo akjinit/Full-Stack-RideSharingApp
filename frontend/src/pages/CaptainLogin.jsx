@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { CaptainDataContext } from "../context/CaptainContext";
 
 const CaptainLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("vishalsharma@gmail.com");
+  const [password, setPassword] = useState("7777777");
   const { captain, setCaptain } = useContext(CaptainDataContext);
   const navigate = useNavigate();
 
