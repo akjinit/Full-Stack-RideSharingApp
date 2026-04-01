@@ -30,6 +30,33 @@ module.exports.getAddressCoordinate = async (address) => {
     }
 };
 
+module.exports.getReverseGeocode = async (lat, lng) => {
+    try {
+        const response = await axios.get(
+            "https://maps.googleapis.com/maps/api/geocode/json",
+            {
+                params: {
+                    latlng: `${lat},${lng}`,
+                    key: process.env.GOOGLE_MAPS_API,
+                },
+                timeout: 5000,
+            }
+        );
+
+        if (response.data.status !== "OK") {
+            throw new Error(`Unable to reverse geocode: ${response.data.status}`);
+        }
+
+        // Return the formatted address of the first result
+        if (response.data.results && response.data.results.length > 0) {
+            return response.data.results[0].formatted_address;
+        }
+        return null;
+    } catch (err) {
+        throw new Error(err.message);
+    }
+};
+
 
 
 module.exports.getDistanceTime = async (origins, destinations) => {

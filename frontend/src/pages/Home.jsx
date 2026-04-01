@@ -4,6 +4,7 @@ import VehiclePanel from "../Components/VehiclePanel";
 import ConfirmVehicle from "../Components/ConfirmVehicle";
 import WaitingForDriver from "../Components/WaitingForDriver";
 import LookingForDriver from "../Components/LookingForDriver";
+import AiRecommendationsPanel from "../Components/AiRecommendationsPanel";
 import axios from "axios";
 import { useEffect } from "react";
 import { SocketDataContext } from "../context/SocketContext";
@@ -56,6 +57,9 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [location, setLocation] = useState({ lat: 22.961074, lng: 88.433524 });
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  const [aiRecommendations, setAiRecommendations] = useState([]);
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const [drivers, setDrivers] = useState([]);
   const navigate = useNavigate();
   const { sendMessage, recieveMessage, socket } = useContext(SocketDataContext);
@@ -145,6 +149,27 @@ const Home = () => {
       setSuggestions(addresses);
     } catch (err) {
       console.log("Error fetching suggestions:", err);
+    }
+  }
+
+  const fetchAiRecommendations = async () => {
+    setIsAiLoading(true);
+    setAiPanelOpen(true);
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-ai-recommendations`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        params: {
+          lat: location.lat,
+          lng: location.lng
+        }
+      });
+      setAiRecommendations(response.data);
+    } catch (err) {
+      console.log("Error fetching AI recommendations:", err);
+    } finally {
+      setIsAiLoading(false);
     }
   }
 
@@ -340,6 +365,13 @@ const Home = () => {
           <h4 className="text-[28px] font-semibold tracking-tighter">
             Find a trip
           </h4>
+          <button 
+            type="button"
+            onClick={fetchAiRecommendations}
+            className="w-full mt-3 py-2.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 font-medium rounded-lg border border-indigo-100 flex items-center justify-center gap-2 hover:from-indigo-100 hover:to-purple-100 transition-colors shadow-sm"
+          >
+            <i className="ri-magic-line text-lg"></i> AI: Explore Nearby
+          </button>
           <form
             onSubmit={(e) => {
               submitHandler(e);
@@ -401,6 +433,19 @@ const Home = () => {
           />
         </div>
       </div>
+
+      <AiRecommendationsPanel 
+        aiPanelOpen={aiPanelOpen}
+        setAiPanelOpen={setAiPanelOpen}
+        recommendations={aiRecommendations}
+        isAiLoading={isAiLoading}
+        onSelectPlace={(placeName) => {
+           setDestination(placeName);
+           // Also make sure to open the destination suggestions / close the panel state if needed
+           setpickupPanelClose(false);
+           setDestinationInputFocused(true);
+        }}
+      />
 
       <VehiclePanel
         setvehiclePanelOpen={setvehiclePanelOpen}
