@@ -5,6 +5,7 @@ const userController = require("../controllers/user.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
 const mapController = require("../controllers/map.controller");
 
+//google-api free version expired
 router.post(
   "/register",
   [
